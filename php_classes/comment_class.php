@@ -64,10 +64,29 @@ Class Comment extends DatabaseEntity{
         return $comment_array;
     }
 
+    function loadComment(){
+        $result = false;
+        if($this->comment_id){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT * FROM Comments WHERE comment_id=:comment_id';
+
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':comment_id', $this->comment_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            if($result){
+                $row = $result->fetchArray();
+                $result = $this->decrypt($row);
+            }
+            $db->close();
+        }
+        return $result;
+    }
+
     function createComment(){
         $result = false;
         if($this->account_id && $this->blog_id && $this->contents){
             $iv = $this->createIV();
+            $this->iv = $iv;
             $contents = $this->encrypt($this->contents);
             $db = new SQLite3('../data/database.db');
             $sql = 'INSERT INTO Comments(account_id, blog_id, contents, comment_datetime, iv) VALUES(:account_id, :blog_id, :contents, datetime(:comment_datetime), :iv)';
@@ -87,6 +106,32 @@ Class Comment extends DatabaseEntity{
             if($result){
                 $this->comment_id = $db->lastInsertRowID();
             }
+            $db->close();
+        }
+        return $result;
+    }
+
+    static function deleteComments($params){
+        $result = false;
+        if(isset($params['blog_id']) && $params['blog_id']){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'DELETE FROM Comments WHERE blog_id=:blog_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
+            $result = $db->execute();
+            $db->close();
+        }
+        return $result;
+    }
+
+    function deleteComment(){
+        $result = false;
+        if($this->comment_id){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'DELETE FROM Comments WHERE comment_id=:comment_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':comment_id', $this->comment_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
             $db->close();
         }
         return $result;

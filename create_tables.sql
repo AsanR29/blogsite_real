@@ -97,7 +97,7 @@ CREATE TABLE "Comment_reports" (
     "report_date"   DATE,
     "report_type"   TEXT,
     "explanation"   TEXT,
-    "reolved_date"  DATE,
+    "resolved_date"  DATE,
     PRIMARY KEY("comment_report_id" AUTOINCREMENT),
     FOREIGN KEY("comment_id")   REFERENCES "Comments"("comment_id")
 );

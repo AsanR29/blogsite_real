@@ -2,7 +2,7 @@
 require_once('databaseEntity_class.php');
 
 Class Account extends DatabaseEntity{
-    public $account_id, $username, $password, $email, $account_type, $verified;
+    public $account_id, $username, $password, $email, $account_type, $email_code;
 
     function __construct($params){
         parent::__construct("Accounts");
@@ -25,8 +25,8 @@ Class Account extends DatabaseEntity{
         if(isset($params['account_type'])){
             $this->account_type = $params['account_type'];
         }
-        if(isset($params['verified'])){
-            $this->verified = $params['verified'];
+        if(isset($params['email_code'])){
+            $this->email_code= $params['email_code'];
         }
     }
 
@@ -75,22 +75,18 @@ Class Account extends DatabaseEntity{
             $password = $this->encryptPassword($this->password);
             $email = $this->encryptUnique($this->email);
             $account_type = ($this->account_type) ? $this->account_type : 1;
-            $verified = 0;
+            $email_code = $this->createCode();
 
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT COUNT(*) FROM Accounts WHERE username=:username OR email=:email';
-            $stmt = $db->prepare($sql);
-            $stmt->bindParam(':username', $this->username, SQLITE3_TEXT);
-            $stmt->bindParam(':email', $email, SQLITE3_TEXT);
-            $result = $stmt->execute();
+            $result = $this->checkUnique($db);
             if($result == 0){
-                $sql = 'INSERT INTO Accounts(username, password, email, account_type, verified) VALUES(:username, :password, :email, :account_type, :verified)';
+                $sql = 'INSERT INTO Accounts(username, password, email, account_type, email_code) VALUES(:username, :password, :email, :account_type, :email_code)';
                 $stmt = $db->prepare($sql);
                 $stmt->bindParam(':username', $this->username, SQLITE3_TEXT);
                 $stmt->bindParam('password', $password, SQLITE3_TEXT);
                 $stmt->bindParam(':email', $email, SQLITE3_TEXT);
                 $stmt->bindParam(':account_type', $account_type, SQLITE3_INTEGER);
-                $stmt->bindParam(':verified', $verified, SQLITE3_INTEGER);
+                $stmt->bindParam(':email_code', $email_code, SQLITE3_TEXT);
                 $result = $stmt->execute();
                 if($result){
                     $this->account_id = $db->lastInsertRowID();
@@ -100,6 +96,107 @@ Class Account extends DatabaseEntity{
                 $result = false;
             }
             $db->close();
+        }
+        return $result;
+    }
+
+    function checkUnique($db){
+        $sql = 'SELECT COUNT(*) FROM Accounts WHERE username=:username OR email=:email';
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':username', $this->username, SQLITE3_TEXT);
+        $stmt->bindParam(':email', $this->encryptUnique($this->email), SQLITE3_TEXT);
+        $result = $stmt->execute();
+        return $result;
+    }
+
+    function updateAccount($params){
+        $result = false;
+        if(isset($params['account_type']) && $params['account_type'] != $this->account_type){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'UPDATE Accounts SET account_type=:account_type WHERE account_id=:account_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':account_type', $account_type, SQLITE3_INTEGER);
+            $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            if($result){
+                $this->account_type = $params['account_type'];
+            }
+            $db->close();
+        }
+        else if(isset($params['email']) && $params['email'] != $this->email){
+            $db = new SQLite3('../data/database.db');
+            $this->email = $params['email'];
+            $result = $this->checkUnique($db);
+            if($result){
+                $email = $this->encryptUnique($this->email);
+                $account_type = ($this->account_type == 2) ? 1 : $this->account_type;   //unverify email
+                $email_code = $this->createCode();
+
+                $sql = 'UPDATE Accounts SET email=:email, account_type=:account_type, email_code=:email_code WHERE account_id=:account_id';
+                $stmt = $db->prepare($sql);
+                $stmt->bindParam(':email', $email, SQLITE3_TEXT);
+                $stmt->bindParam(':account_type', $account_type, SQLITE3_INTEGER);
+                $stmt->bindParam(':email_code', $email_code, SQLITE3_TEXT);
+                $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
+                $result = $stmt->execute();
+                if($result){
+                    $this->account_type = $account_type;
+                    $this->email_code = $email_code;
+                }
+            }
+            $db->close();
+        }
+        else if(isset($params['email_code'])){
+            $email_code = $this->createCode();
+            $db = new SQLite3('../data/database.db');
+            $sql = 'UPDATE Accounts SET email_code=:email_code WHERE account_id=:account_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':email_code', $email_code, SQLITE3_TEXT);
+            $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            if($result){
+                $this->email_code = $email_code;
+            }
+            $db->close();
+        }
+        else if(isset($params['password'])){
+            $this->password = $params['password'];
+            $password = $this->encryptPassword($this->password);
+
+            $db = new SQLite3('../data/database.db');
+            $sql = 'UPDATE Accounts SET password=:password WHERE account_id=:account_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':password', $password, SQLITE3_TEXT);
+            $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $db->close();
+        }
+        return $result;
+    }
+
+    function createCode(){
+        $chars = array_merge(range('0','9'), range('a','z'), range('A','Z'));
+        $email_code = "";
+        for($i = 0; $i < 6; $i++){
+            $email_code .= $chars[random_int(0,61)];
+        }
+        return $email_code;
+    }
+
+    function deleteAccount(){
+        $result = false;
+        if($this->account_id){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'DELETE FROM Accounts WHERE account_id=:account_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $db->close();
+            if($result){
+                require_once('file_class.php');
+                $params = array('account_id'=>$this->account_id);
+                $result = UserFile::deleteFiles($params);
+            }
         }
         return $result;
     }

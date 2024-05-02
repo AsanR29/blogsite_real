@@ -69,6 +69,7 @@ Class BlogPost extends DatabaseEntity{
         $result = false;
         if($this->account_id && $this->visibility && $this->title){
             $iv = $this->createIV();
+            $this->iv = $iv;
             $contents = $this->encrypt($this->contents);
             $db = new SQLite3('../data/database.db');
             $sql = 'INSERT INTO Blog_posts(account_id, blog_datetime, visibility, title, contents, iv) VALUES(:account_id, datetime(:blog_datetime), :visibility, :title, :contents, :iv)';
@@ -97,6 +98,59 @@ Class BlogPost extends DatabaseEntity{
                 $result = $stmt->execute();
             }
             $db->close();
+        }
+        return $result;
+    }
+
+    function updateBlog($params){
+        $result = false;
+        if(isset($params['contents']) && $params['contents']){
+            $this->unpack($params);
+            $contents = $this->encrypt($this->contents);
+            $db = new SQLite3('../data/database.db');
+            $sql = 'UPDATE Blog_posts SET visbility=:visibility, title=:title, contents=:contents WHERE blog_id=:blog_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':visibility', $this->visibility, SQLITE_INTEGER);
+            $stmt->bindParam(':title', $this->title, SQLITE_TEXT);
+            $stmt->bindParam(':contents', $contents, SQLITE_TEXT);
+            $stmt->bindParam(':blog_id', $this->blog_id, SQLITE_INTEGER);
+            $result = $stmt->execute();
+            $db->close();
+        }
+        else if(isset($params['visibility']) && $params['visibility'] != $this->visbility){
+            $this->visibility = $params['visibility'];
+            $db = new SQLite3('../data/database.db');
+            $sql = 'UPDATE Blog_posts SET visbility=:visibility WHERE blog_id=:blog_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':visibility', $this->visibility, SQLITE_INTEGER);
+            $stmt->bindParam(':blog_id', $this->blog_id, SQLITE_INTEGER);
+            $result = $stmt->execute();
+            $db->close();
+        }
+        return $result;
+    }
+
+    function deleteblog(){
+        $result = false;
+        if($this->blog_id){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'DELETE FROM Blog_posts WHERE blog_id=:blog_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':blog_id', $this->blog_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $db->close();
+            if($result){
+                require_once('file_class.php');
+                $params = array('blog_id'=>$this->blog_id);
+                $result_1 = UserFile::deleteFiles($params);
+                require_once('blog_tag_class.php');
+                $result_2 = UserFile::deleteBlogTags($params);
+                require_once('comment_class.php');
+                $result_3 = UserFile::deleteComments($params);
+                if(!($result_1 && $result_2 && $result_3)){
+                    $result = false;
+                }
+            }
         }
         return $result;
     }

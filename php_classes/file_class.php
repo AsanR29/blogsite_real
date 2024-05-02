@@ -33,7 +33,7 @@ Class UserFile extends DatabaseEntity{
         if(isset($params['file_url'])){
             $this->file_url = $params['file_url'];
         }
-    } a
+    }
 
     static function loadFiles($params){
         $file_array = array();
@@ -95,6 +95,40 @@ Class UserFile extends DatabaseEntity{
                 $stmt->bindParam(':file_id', $this->file_id, SQLITE3_INTEGER);
                 $result = $stmt->execute();
             }
+            $db->close();
+        }
+        return $result;
+    }
+
+    static function deleteFiles($params){
+        $result = false;
+        if(isset($params['blog_id']) && $params['blog_id']){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'DELETE FROM User_files WHERE blog_id=:blog_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
+            $result = $db->execute();
+            $db->close();
+        }
+        else if(isset($params['account_id']) && $params['account_id']){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'DELETE FROM User_files WHERE account_id=:account_id AND blog_id=null';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':account_id', $params['account_id'], SQLITE3_INTEGER);
+            $result = $db->execute();
+            $db->close();
+        }
+        return $result;
+    }
+
+    function deleteFile(){
+        $result = false;
+        if($this->file_id){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'DELETE FROM User_files WHERE file_id=:file_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':file_id', $this->file_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
             $db->close();
         }
         return $result;
