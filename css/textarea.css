@@ -1,0 +1,40 @@
+.editing{
+    font-family: var(--font);
+    resize: none;
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+
+    background-color: rgba(0, 0, 0, 0.1);
+    border-width: 0px;
+
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow-wrap: anywhere;
+    overflow:hidden;
+}
+
+textarea:focus-visible{
+    outline: transparent !important;
+    border-width: 0px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+div#shadowArea{
+    font-family: var(--font);
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+
+    position: absolute;
+    height: auto;
+
+    width: var(--textarea-width);
+    left: var(--textarea-x);
+    top: var(--textarea-y);
+
+    z-index: -1;
+    background-color: transparent;
+    color:transparent;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}

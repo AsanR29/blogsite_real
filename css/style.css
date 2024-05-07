@@ -1,0 +1,158 @@
+@import 'textarea.css';
+
+:root{
+    --width: 1000px;
+    --height: 100vh;
+    --font: 'Times New Roman', Times, serif;
+
+    /*they suggest 1.2x the fontsize online, to prevent lineheight being less than true height*/
+    --user-fontsize: 16px;
+    --user-lineheight: 20px;
+
+    --page-fontsize: 20px;
+    --page-lineheight: 24px;
+
+    --title-fontsize: 25px;
+    --title-lineheight: 30px;
+
+    --nav-fontsize: 40px;
+    --nav-lineheight: 48px;
+
+    --textarea-height: 0px;
+    --textarea-width: 0px;
+    --textarea-x: 0px;
+    --textarea-y: 0px;
+}
+
+html{
+    width: 100%;
+    height: 100%;
+}
+body{
+    margin: auto;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background-color: gray;
+}
+div{
+    width: inherit;
+    height: inherit;
+}
+#mainbox{
+    display: flex;
+    width: 65%;
+    min-height: var(--height);
+    height: fit-content;
+    background-color: lightblue;
+}
+#mainmargin{
+    width: 5%;
+}
+#mainarea{
+    width: 90%;
+}
+#mainbuffer{
+    width: 100%;
+    height: calc(var(--nav-lineheight) * 0.5);
+}
+
+.svgbutton{
+    background-image: url('../css/button.svg');
+    background-size: 100% 100%;
+    border-width: 0;
+    background-color: transparent;
+    padding: 0;
+    padding-left: 4px;
+    padding-right: 4px;
+    line-height: 26px;
+    width: auto;
+}
+.floatright{
+    float: right;
+}
+
+#titlearea{
+    width: 100%;
+    align-items:center;
+}
+#pagetitle{
+    font-size: var(--nav-fontsize);
+    line-height: var(--nav-lineheight);
+    margin: 0;
+}
+
+.createbloginput{
+    font-family: var(--font);
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+
+    width: 50%;
+    margin: 0px;
+    padding: 0px;
+    border-width: 0px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.titlesize{
+    font-family: var(--font);
+    font-size: var(--nav-fontsize);
+    line-height: var(--nav-lineheight);
+    width: 100%;
+}
+
+.createbloginput:focus-visible{
+    outline: transparent !important;
+    border-width: 0px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.inputrow{
+    display: flex;
+    width: 100%;
+}
+
+.labelinput{
+    font-family: var(--font);
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+
+    width: 25%;
+}
+
+.textright{
+    text-align: right;
+    margin-right: 10px;
+}
+
+.textcenter{
+    text-align:center;
+}
+
+.labelerror{
+    font-family: var(--font);
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+
+    width: 25%;
+    
+    text-align: left;
+    color: red;
+    margin-left: 10px;
+}
+
+.labelgen{
+    font-family: var(--font);
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+}
+
+.notalink{
+    color: black;
+    text-decoration:none;
+}
+.notalink:visited{
+    color:black;
+}

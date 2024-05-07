@@ -4,7 +4,7 @@ CREATE TABLE "Accounts" (
     "password"	TEXT,
 	"email"	TEXT UNIQUE,
 	"account_type"	INTEGER,
-	"verified"	INTEGER,
+	"email_code"	TEXT,
 	PRIMARY KEY("account_id" AUTOINCREMENT)
 );
 

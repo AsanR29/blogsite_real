@@ -26,7 +26,7 @@ Class Comment extends DatabaseEntity{
             $this->comment_datetime = $params['comment_datetime'];
         }
     }
-    function decrypt($params){
+    function decryptValues($params){
         if(isset($params['iv'])){
             $this->iv = $params['iv'];
             if(isset($params['contents'])){
@@ -56,7 +56,7 @@ Class Comment extends DatabaseEntity{
             $i = 0;
             while($row = $result->fetchArray()){
                 $comment_array[$i] = new Comment(false);
-                $comment_array[$i]->decrypt($row);
+                $comment_array[$i]->decryptValues($row);
                 $i += 1;
             }
             $db->close();
@@ -75,7 +75,7 @@ Class Comment extends DatabaseEntity{
             $result = $stmt->execute();
             if($result){
                 $row = $result->fetchArray();
-                $result = $this->decrypt($row);
+                $result = $this->decryptValues($row);
             }
             $db->close();
         }
@@ -100,7 +100,7 @@ Class Comment extends DatabaseEntity{
                 echo $this->blog_datetime;
             }
             $stmt->bindParam(':comment_datetime', $this->comment_datetime, SQLITE3_TEXT);
-            $stmt->bindParam(':iv', $iv, SQLITE_TEXT);
+            $stmt->bindParam(':iv', $iv, SQLITE3_TEXT);
 
             $result = $stmt->execute();
             if($result){

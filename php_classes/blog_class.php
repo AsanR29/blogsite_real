@@ -33,7 +33,7 @@ Class BlogPost extends DatabaseEntity{
             $this->blog_url = $params['blog_url'];
         }
     }
-    function decrypt($params){
+    function decryptValues($params){
         if(isset($params['iv'])){
             $this->iv = $params['iv'];
             if(isset($params['contents'])){
@@ -47,6 +47,48 @@ Class BlogPost extends DatabaseEntity{
         }
     }
 
+    static function loadBlogs($params){
+        $blog_array = array();
+        if(isset($params['account_id'])){
+            $order = 'DESC';
+            if(isset($params['order'])){
+                $order = $params['order'];
+            }
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT * FROM Blog_posts WHERE account_id=:account_id ORDER BY blog_datetime ' . $order;
+
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':account_id', $params['account_id'], SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $i = 0;
+            while($row = $result->fetchArray()){
+                $blog_array[$i] = new BlogPost(false);
+                $blog_array[$i]->decryptValues($row);
+                $i += 1;
+            }
+            $db->close();
+        }
+        else{
+            $order = 'DESC';
+            if(isset($params['order'])){
+                $order = $params['order'];
+            }
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT * FROM Blog_posts ORDER BY blog_datetime ' . $order;
+
+            $stmt = $db->prepare($sql);
+            $result = $stmt->execute();
+            $i = 0;
+            while($row = $result->fetchArray()){
+                $blog_array[$i] = new BlogPost(false);
+                $blog_array[$i]->decryptValues($row);
+                $i += 1;
+            }
+            $db->close();
+        }
+        return $blog_array;
+    }
+
     function loadBlog(){
         $result = false;
         if($this->blog_id){
@@ -58,7 +100,20 @@ Class BlogPost extends DatabaseEntity{
             $result = $stmt->execute();
             if($result){
                 $row = $result->fetchArray();
-                $result = $this->decrypt($row);
+                $result = $this->decryptValues($row);
+            }
+            $db->close();
+        }
+        else if($this->blog_url){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT * FROM Blog_posts WHERE blog_url=:blog_url';
+
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':blog_url', $this->blog_url, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            if($result){
+                $row = $result->fetchArray();
+                $result = $this->decryptValues($row);
             }
             $db->close();
         }
@@ -75,26 +130,26 @@ Class BlogPost extends DatabaseEntity{
             $sql = 'INSERT INTO Blog_posts(account_id, blog_datetime, visibility, title, contents, iv) VALUES(:account_id, datetime(:blog_datetime), :visibility, :title, :contents, :iv)';
 
             $stmt = $db->prepare($sql);
-            $stmt->bindParam(':account_id', $this->account_id, SQLITE_INTEGER);
+            $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
             if(!$this->blog_datetime){
                 $this->blog_datetime = date('Y-m-d H:i:s');
                 echo $this->blog_datetime;
             }
-            $stmt->bindParam(':blog_datetime', $this->blog_datetime, SQLITE_TEXT);
-            $stmt->bindParam(':visibility', $this->visibility, SQLITE_INTEGER);
-            $stmt->bindParam(':title', $this->title, SQLITE_TEXT);
-            $stmt->bindParam(':contents', $contents, SQLITE_TEXT);
-            $stmt->bindParam(':iv', $iv, SQLITE_TEXT);
+            $stmt->bindParam(':blog_datetime', $this->blog_datetime, SQLITE3_TEXT);
+            $stmt->bindParam(':visibility', $this->visibility, SQLITE3_INTEGER);
+            $stmt->bindParam(':title', $this->title, SQLITE3_TEXT);
+            $stmt->bindParam(':contents', $contents, SQLITE3_TEXT);
+            $stmt->bindParam(':iv', $iv, SQLITE3_TEXT);
             
             $result = $stmt->execute();
             if($result){
                 $this->blog_id = $db->lastInsertRowID();
-                $blog_url = $this->encryptUnique($this->blog_id);
+                $blog_url = base64_encode($this->encryptUnique($this->blog_id));
 
                 $sql = 'UPDATE Blog_posts SET blog_url=:blog_url WHERE blog_id=:blog_id';
                 $stmt = $db->prepare($sql);
-                $stmt->bindParam(':blog_url', $blog_url, SQLITE_TEXT);
-                $stmt->bindParam(':blog_id', $this->blog_id, SQLITE_INTEGER);
+                $stmt->bindParam(':blog_url', $blog_url, SQLITE3_TEXT);
+                $stmt->bindParam(':blog_id', $this->blog_id, SQLITE3_INTEGER);
                 $result = $stmt->execute();
             }
             $db->close();
@@ -110,10 +165,10 @@ Class BlogPost extends DatabaseEntity{
             $db = new SQLite3('../data/database.db');
             $sql = 'UPDATE Blog_posts SET visbility=:visibility, title=:title, contents=:contents WHERE blog_id=:blog_id';
             $stmt = $db->prepare($sql);
-            $stmt->bindParam(':visibility', $this->visibility, SQLITE_INTEGER);
-            $stmt->bindParam(':title', $this->title, SQLITE_TEXT);
-            $stmt->bindParam(':contents', $contents, SQLITE_TEXT);
-            $stmt->bindParam(':blog_id', $this->blog_id, SQLITE_INTEGER);
+            $stmt->bindParam(':visibility', $this->visibility, SQLITE3_INTEGER);
+            $stmt->bindParam(':title', $this->title, SQLITE3_TEXT);
+            $stmt->bindParam(':contents', $contents, SQLITE3_TEXT);
+            $stmt->bindParam(':blog_id', $this->blog_id, SQLITE3_INTEGER);
             $result = $stmt->execute();
             $db->close();
         }
@@ -122,8 +177,8 @@ Class BlogPost extends DatabaseEntity{
             $db = new SQLite3('../data/database.db');
             $sql = 'UPDATE Blog_posts SET visbility=:visibility WHERE blog_id=:blog_id';
             $stmt = $db->prepare($sql);
-            $stmt->bindParam(':visibility', $this->visibility, SQLITE_INTEGER);
-            $stmt->bindParam(':blog_id', $this->blog_id, SQLITE_INTEGER);
+            $stmt->bindParam(':visibility', $this->visibility, SQLITE3_INTEGER);
+            $stmt->bindParam(':blog_id', $this->blog_id, SQLITE3_INTEGER);
             $result = $stmt->execute();
             $db->close();
         }

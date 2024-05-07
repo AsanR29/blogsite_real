@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" preserveAspectRatio="none">
+  <path d="
+  M 0,100 
+  A 100 100 0 0 1 100,0
+  L 900,0
+  A 100 100 0 0 1 1000,100
+  L 1000,500
+  A 100 100 0 0 1 900,600
+  L 100,600
+  A 100 100 0 0 1 0,500
+  L 0,100
+  " stroke="none" fill="#D0A000" stroke-width="2" fill-opacity="1"/>
+  <path d="
+  M 125,150 
+  A 75 75 0 0 1 200,75
+  L 800,75
+  A 75 75 0 0 1 875,150
+  L 875,450
+  A 75 75 0 0 1 800,525
+  L 200,525
+  A 75 75 0 0 1 125,450
+  L 125,150
+  " stroke="none" fill="#DDAA00" stroke-width="2" fill-opacity="1"/>
+</svg>

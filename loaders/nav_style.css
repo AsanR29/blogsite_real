@@ -1,0 +1,62 @@
+/*left*/
+#historybox{
+    width: 10%;
+    height: 100%;
+    background-color:blue;
+}
+#arrowsbox{
+    display: flex;
+    width: 100%;
+    height: 10%;
+}
+.arrow{
+    width: 50%;
+    height: 100%;
+}
+#leftarrow{
+    background-color: darkgreen;
+}
+#rightarrow{
+    background-color: lightgreen;
+}
+#historylist{
+    width: 100%;
+    height: 90%;
+    overflow-y: scroll;
+}
+
+#leftgap{
+    width: 5%;
+    height:100%;
+}
+
+/*right*/
+#rightgap{
+    width: 5%;
+    height: 100%;
+}
+#navbox{
+    width: 15%;
+    height: 100%;
+    background-color: blue;
+}
+#searchlink{
+    width: 100%;
+    height: 10%;
+    background-color: darkgreen;
+}
+#taglist{
+    width: 100%;
+    height: 70%;
+    overflow-y: scroll;
+}
+#profilelink{
+    width: 100%;
+    height: 10%;
+    background-color:#00BB00;
+}
+#settingslink{
+    width: 100%;
+    height: 10%;
+    background-color:lightgreen;
+}

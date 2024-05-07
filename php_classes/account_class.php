@@ -17,7 +17,7 @@ Class Account extends DatabaseEntity{
             $this->username = $params['username'];
         }
         if(isset($params['password'])){
-            $this->password_get_info = $params['password'];
+            $this->password = $params['password'];
         }
         if(isset($params['email'])){
             $this->email = $params['email'];
@@ -30,7 +30,7 @@ Class Account extends DatabaseEntity{
         }
     }
 
-    function decrypt($params){
+    function decryptValues($params){
         if(isset($params['email'])){
             $params['email'] = $this->decryptUnique($params['email']);
         }
@@ -47,22 +47,36 @@ Class Account extends DatabaseEntity{
             $result = $stmt->execute();
             if($result){
                 $row = $result->fetchArray();
-                $this->decrypt($row);
+                $this->decryptValues($row);
             }
             $db->close();
         }
         else if($this->username && $this->password){
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Accounts WHERE username=:username AND password=:password';
+            $sql = 'SELECT * FROM Accounts WHERE username=:username';
 
             $stmt = $db->prepare($sql);
-            $password = $this->encryptPassword($this->password);
             $stmt->bindParam(':username', $this->username, SQLITE3_TEXT);
-            $stmt->bindParam(':password', $password, SQLITE3_TEXT);
             $result = $stmt->execute();
             if($result){
                 $row = $result->fetchArray();
-                $this->decrypt($row);
+                $result = password_verify($this->password, $row['password']);
+                if($result){
+                    $this->decryptValues($row);
+                }
+            }
+            $db->close();
+        }
+        else if($this->username){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT account_id FROM Accounts WHERE username=:username';
+
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':username', $this->username, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            if($result){
+                $row = $result->fetchArray();
+                $this->unpack($row);
             }
             $db->close();
         }
@@ -104,9 +118,11 @@ Class Account extends DatabaseEntity{
         $sql = 'SELECT COUNT(*) FROM Accounts WHERE username=:username OR email=:email';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':username', $this->username, SQLITE3_TEXT);
-        $stmt->bindParam(':email', $this->encryptUnique($this->email), SQLITE3_TEXT);
+        $email = $this->encryptUnique($this->email);
+        $stmt->bindParam(':email', $email, SQLITE3_TEXT);
         $result = $stmt->execute();
-        return $result;
+        $result = $result->fetchArray();
+        return $result[0];
     }
 
     function updateAccount($params){

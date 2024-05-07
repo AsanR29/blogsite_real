@@ -67,7 +67,7 @@ Class BlogReport {
             $result = $stmt->execute();
             if($result){
                 $row = $result->fetchArray();
-                $result = $this->decrypt($row);
+                $result = $this->unpack($row);
             }
             $db->close();
         }
