@@ -6,4 +6,4 @@
         <h1 id="pagetitle"></h1>
     </div>
     <div id="mainbuffer"></div>
-    <div>
+    <div id="maincontent">

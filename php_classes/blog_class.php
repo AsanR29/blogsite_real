@@ -51,11 +51,16 @@ Class BlogPost extends DatabaseEntity{
         $blog_array = array();
         if(isset($params['account_id'])){
             $order = 'DESC';
+            $limit = 10;
+            $offset = 0;
             if(isset($params['order'])){
                 $order = $params['order'];
             }
+            if(isset($params['page'])){
+                $offset = $limit * intval($params['page']);
+            }
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Blog_posts WHERE account_id=:account_id ORDER BY blog_datetime ' . $order;
+            $sql = 'SELECT * FROM Blog_posts WHERE account_id=:account_id ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
 
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':account_id', $params['account_id'], SQLITE3_INTEGER);
@@ -70,11 +75,16 @@ Class BlogPost extends DatabaseEntity{
         }
         else{
             $order = 'DESC';
+            $limit = 10;
+            $offset = 0;
             if(isset($params['order'])){
                 $order = $params['order'];
             }
+            if(isset($params['page'])){
+                $offset = $limit * intval($params['page']);
+            }
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Blog_posts ORDER BY blog_datetime ' . $order;
+            $sql = 'SELECT * FROM Blog_posts ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
 
             $stmt = $db->prepare($sql);
             $result = $stmt->execute();
@@ -199,9 +209,9 @@ Class BlogPost extends DatabaseEntity{
                 $params = array('blog_id'=>$this->blog_id);
                 $result_1 = UserFile::deleteFiles($params);
                 require_once('blog_tag_class.php');
-                $result_2 = UserFile::deleteBlogTags($params);
+                $result_2 = BlogTag::deleteBlogTags($params);
                 require_once('comment_class.php');
-                $result_3 = UserFile::deleteComments($params);
+                $result_3 = Comment::deleteComments($params);
                 if(!($result_1 && $result_2 && $result_3)){
                     $result = false;
                 }

@@ -22,11 +22,23 @@
     --textarea-width: 0px;
     --textarea-x: 0px;
     --textarea-y: 0px;
+
+    --popuplogin: 0%;
+    --popupreportblog: 0%;
+    --popupreportcomment: 0%;
+    --deleteblog: 0%;
+    --deletecomment: 0%;
 }
 
 html{
     width: 100%;
     height: 100%;
+}
+div#super{
+    margin: 0;
+    display: flex;
+    width: 100%;
+    height: var(--height);
 }
 body{
     margin: auto;
@@ -35,9 +47,21 @@ body{
     height: 100%;
     padding: 0;
     border: 0;
-    background-color: gray;
+    background-color: grey;
+    background-attachment: fixed;
+    background-image: linear-gradient(160deg, #325882, #0c4e77, #1e6d8a, #4a99ae, #60b2bd, #8ad0d6);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 div{
+    width: inherit;
+    height: inherit;
+}
+article{
+    width: inherit;
+    height: inherit;
+}
+form{
     width: inherit;
     height: inherit;
 }
@@ -46,7 +70,9 @@ div{
     width: 65%;
     min-height: var(--height);
     height: fit-content;
+    max-height: var(--height);
     background-color: lightblue;
+    overflow:scroll;
 }
 #mainmargin{
     width: 5%;
@@ -57,6 +83,9 @@ div{
 #mainbuffer{
     width: 100%;
     height: calc(var(--nav-lineheight) * 0.5);
+}
+#maincontent{
+    width: 100%;
 }
 
 .svgbutton{
@@ -112,6 +141,12 @@ div{
 .inputrow{
     display: flex;
     width: 100%;
+    height: var(--user-lineheight);
+}
+.inputarea{
+    display:flex;
+    width: 100%;
+    height: calc(var(--user-lineheight) * 3);
 }
 
 .labelinput{
@@ -155,4 +190,141 @@ div{
 }
 .notalink:visited{
     color:black;
+}
+
+.linebreak{
+    width: 100%;
+    height: var(--user-lineheight);
+}
+.padbottom{
+    width: 100%;
+    padding-bottom: calc(var(--user-lineheight) * 0.5);
+}
+
+.commentarea{
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+.commentpicarea{
+    width: 10%;
+    height: 100%;
+}
+.commenttext{
+    width: 90%;
+    height: 100%;
+}
+.commentpart{
+    width: 100%;
+}
+.labelusername{
+    font-family: var(--font);
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+    text-decoration: underline;
+}
+.pfp{
+    width: 80%;
+    height: auto;
+}
+
+.popup{
+    left: 0px;
+    top: 0px;
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0, 0, 0, 0.5);
+    overflow:hidden;
+}
+.popupL1{
+    width: 17.5%;
+    height: 100%;
+}
+.popupR1{
+    width: 22.5%;
+    height: 100%;
+}
+.popupM1{
+    width: 60%;
+    height: 100%;
+}
+.popupT1{
+    width: 100%;
+    height: 30%;
+}
+.popupB1{
+    width: 100%;
+    height: 30%;
+}
+.popupM2{
+    display: flex;
+    width: 100%;
+    height: 40%;
+    background-color: #8ad0d6;
+}
+.popupL2{
+    width: 5%;
+    height: 100%;
+}
+.popupR2{
+    width: 5%;
+    height: 100%;
+}
+.popupM3{
+    width: 90%;
+    height: 100%;
+}
+.popupT2{
+    width: 100%;
+    height: 25%;
+    align-items: center;
+}
+.popupM4{
+    width: 100%;
+    height: 55%;
+}
+.popupB2{
+    width: 100%;
+    height: 20%;
+}
+.reporttitle{
+    padding-top: 1%;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.deleteoption{
+    width: 50%;
+    height: 100%;
+    background-color: rgb(255, 255, 255, 0.5);
+}
+.yesdelete:hover{
+    background-color: red;
+}
+.nodelete:hover{
+    background-color: green;
+}
+
+#popuplogin{
+    width: var(--popuplogin);
+    height: var(--popuplogin);
+}
+#popupreportblog{
+    width: var(--popupreportblog);
+    height: var(--popupreportblog);
+}
+#popupreportcomment{
+    width: var(--popupreportcomment);
+    height: var(--popupreportcomment);
+}
+#deleteblog{
+    width: var(--deleteblog);
+    height: var(--deleteblog);
+}
+#deletecomment{
+    width: var(--deletecomment);
+    height: var(--deletecomment);
 }

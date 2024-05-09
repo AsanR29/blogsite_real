@@ -44,11 +44,16 @@ Class Comment extends DatabaseEntity{
         $comment_array = array();
         if(isset($params['blog_id'])){
             $order = 'DESC';
+            $limit = 10;
+            $offset = 0;
             if(isset($params['order'])){
                 $order = $params['order'];
             }
+            if(isset($params['page'])){
+                $offset = $limit * intval($params['page']);
+            }
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Comments WHERE blog_id=:blog_id ORDER BY comment_datetime ' . $order;
+            $sql = 'SELECT Comments.*, Accounts.username FROM Comments JOIN Accounts ON Comments.account_id = Accounts.account_id WHERE blog_id=:blog_id ORDER BY comment_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
             
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
@@ -57,6 +62,7 @@ Class Comment extends DatabaseEntity{
             while($row = $result->fetchArray()){
                 $comment_array[$i] = new Comment(false);
                 $comment_array[$i]->decryptValues($row);
+                $comment_array[$i]->username = $row['username'];
                 $i += 1;
             }
             $db->close();
@@ -97,7 +103,6 @@ Class Comment extends DatabaseEntity{
             $stmt->bindParam(':contents', $contents, SQLITE3_TEXT);
             if(!$this->comment_datetime){
                 $this->comment_datetime = date('Y-m-d H:i:s');
-                echo $this->blog_datetime;
             }
             $stmt->bindParam(':comment_datetime', $this->comment_datetime, SQLITE3_TEXT);
             $stmt->bindParam(':iv', $iv, SQLITE3_TEXT);
@@ -118,7 +123,7 @@ Class Comment extends DatabaseEntity{
             $sql = 'DELETE FROM Comments WHERE blog_id=:blog_id';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
-            $result = $db->execute();
+            $result = $stmt->execute();
             $db->close();
         }
         return $result;
@@ -135,5 +140,11 @@ Class Comment extends DatabaseEntity{
             $db->close();
         }
         return $result;
+    }
+
+    function removeID(){
+        $this->comment_id = false;
+        $this->account_id = false;
+        $this->blog_id = false;
     }
 }

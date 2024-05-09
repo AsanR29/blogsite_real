@@ -14,7 +14,7 @@
     <div id="bloglinks"></div>
     <input hidden type="file" id="imageSubmission" name="imageSubmission[]" accept="image/jpeg, application/pdf" multiple class="form_input"><br>           
     <label class="svgbutton" for="imageSubmission">Add images</label>
-    <label class="svgbutton" for="addLink">Add link</label>
+    <label id="blogtag_create" class="svgbutton" for="addBlogtag">Add Tag</label>
     <select name="visibility" class="form_input" required>
         <option value="0">Private</option>
         <option value="1">Unlisted</option>
@@ -23,8 +23,7 @@
     <button class="svgbutton floatright">Create blog post</button>
 </form>
 <div id="imagepreviews"></div>
-<button id="addLink" hidden onclick="addLink()"></button>
-<button onclick="checkfile()">Check file element</button>
+<button id="addBlogtag" hidden onclick="addBlogTag('blogtag_create')"></button>
 </article>
 
 <?php require_once('../loaders/main_bottom.php'); ?>

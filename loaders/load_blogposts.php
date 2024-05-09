@@ -1,20 +1,19 @@
 <?php
 require_once('../php_classes/blog_class.php');
+require_once('../php_classes/account_class.php');
+$form = json_decode(file_get_contents('php://input'), true);
 $params = array();
-if(isset($username)){
-    require_once('../php_classes/account_class.php');
-    $params = array('username'=>$username);
-    $account = new Account($params);
+
+if(isset($form['username']) && $form['username']){
+    $account = new Account($form);
     $result = $account->loadAccount();
     if($result){
-        $account_id = $account->account_id;
-    }
-    else{
-        $account_id = 0;
+        $user_id = $account->account_id;
+        $params['account_id'] = $user_id;
     }
 }
-if(isset($account_id) && $account_id){
-    $params['account_id'] = $account_id;
+if(isset($form['page'])){
+    $params['page'] = $form['page'];
 }
 $blog_array = BlogPost::loadBlogs($params);
 

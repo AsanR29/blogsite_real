@@ -1,9 +1,9 @@
 function measureTextarea(){
     var element = document.getElementById("testsubject");
-    var w = element.offsetWidth;
-    var h = element.offsetHeight;
-    var x = element.offsetLeft;
-    var y = element.offsetTop;
+    var w = element.offsetWidth + "px";
+    var h = element.offsetHeight + "px";
+    var x = element.offsetLeft + "px";
+    var y = element.offsetTop + "px";
 
     //var letterWidth = window.getComputedStyle(element).getPropertyValue("font-size");
     //letterWidth = parseInt(letterWidth.replace("px", ""));

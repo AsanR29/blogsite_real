@@ -13,6 +13,7 @@ if($result){
         $location = '../blogdaily/search.php';
         $_SESSION['account_id'] = $account->account_id;
         $_SESSION['account_type'] = $account->account_type;
+        $_SESSION['username'] = $account->username;
         if($account->account_type == 1){    //unverified email
             $location = '../blogdaily/verify_email.php';
         }

@@ -35,6 +35,22 @@ div#shadowArea{
     z-index: -1;
     background-color: transparent;
     color:transparent;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     white-space: pre-wrap;
+}
+
+textarea.generic{
+    font-family: var(--font);
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+
+    background-color: rgba(0, 0, 0, 0.1);
+    border-width: 0px;
+
+    resize:none;
+    width: 100%;
+    height:fit-content;
+    margin: 0px;
+    padding: 0px;
+    overflow-wrap: anywhere;
 }

@@ -57,6 +57,7 @@ CREATE TABLE "User_files" (
     "blog_id"   INTEGER,
     "file_name" TEXT,
     "mime_type" TEXT,
+    "file_url"  TEXT,
     PRIMARY KEY("file_id" AUTOINCREMENT),
     FOREIGN KEY("account_id")   REFERENCES "Accounts"("account_id"),
     FOREIGN KEY("blog_id")  REFERENCES "Blog_posts"("blog_id")

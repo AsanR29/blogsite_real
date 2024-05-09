@@ -114,4 +114,9 @@ Class BlogReport {
         }
         return $result;
     }
+
+    function removeID(){
+        $this->blog_report_id = false;
+        $this->blog_id = false;
+    }
 }

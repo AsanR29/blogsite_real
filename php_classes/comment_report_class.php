@@ -114,4 +114,9 @@ Class CommentReport {
         }
         return $result;
     }
+
+    function removeID(){
+        $this->comment_report_id = false;
+        $this->comment_id = false;
+    }
 }

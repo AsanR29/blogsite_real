@@ -5,6 +5,7 @@
     <link href="../loaders/nav_style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../javascript_imports/forms.js"></script>
 </head>
+<div id="super">
 <?php
 session_start();
 $account_id = false;

@@ -20,6 +20,9 @@ Class BlogTag {
         if(isset($params['tag_type'])){
             $this->tag_type = $params['tag_type'];
         }
+        if(isset($params['tag_name'])){
+            $this->tag_name = $params['tag_name'];
+        }
     }
 
     static function loadBlogTags($params){
@@ -50,7 +53,8 @@ Class BlogTag {
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':tag_name', $this->tag_name, SQLITE3_TEXT);
             $result = $stmt->execute();
-            if(!$result){
+            $row = $result->fetchArray();
+            if(!$row || count($row) == 0){
                 $sql = 'INSERT INTO Tags(tag_name) VALUES(:tag_name)';
                 $stmt = $db->prepare($sql);
                 $stmt->bindParam(':tag_name', $this->tag_name, SQLITE3_TEXT);
@@ -60,7 +64,6 @@ Class BlogTag {
                 }
             }
             else{
-                $row = $result->fetchArray();
                 $this->tag_id = $row['tag_id'];
             }
             if($result){
@@ -85,7 +88,7 @@ Class BlogTag {
             $sql = 'DELETE FROM Blog_tags WHERE blog_id=:blog_id';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
-            $result = $db->execute();
+            $result = $stmt->execute();
             $db->close();
         }
         return $result;
