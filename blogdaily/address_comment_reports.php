@@ -29,6 +29,13 @@ if(isset($_POST['approve'])){
         }
     }
     $comment->deleteComment();
+    $params = array('comment_report_id'=>intval($_POST['comment_report_id']));
+    $comment_report = new CommentReport($params);
+    $result = $comment_report->loadCommentReport();
+    if($result){
+        $date = date('Y-m-d');
+        $result = $comment_report->updateCommentReport(array('resolved_date'=>$date));
+    }
 }
 else if(isset($_POST['dismiss'])){
     $params = array('comment_report_id'=>intval($_POST['comment_report_id']));
