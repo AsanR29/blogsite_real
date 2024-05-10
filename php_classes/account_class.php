@@ -131,6 +131,7 @@ Class Account extends DatabaseEntity{
             $db = new SQLite3('../data/database.db');
             $sql = 'UPDATE Accounts SET account_type=:account_type WHERE account_id=:account_id';
             $stmt = $db->prepare($sql);
+            $account_type = $params['account_type'];
             $stmt->bindParam(':account_type', $account_type, SQLITE3_INTEGER);
             $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
             $result = $stmt->execute();

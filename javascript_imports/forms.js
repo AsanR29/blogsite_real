@@ -1,7 +1,6 @@
 var pageObj;
 var selectedComment = false;
-blogtagid_create = 1;
-blogtagid_search = 1;
+blogtagid_total = 1;
 
 function getFormElements(type){
     var elements = [];
@@ -46,10 +45,7 @@ function sendForm(){
     Request.setRequestHeader('Content-Type', 'application/json');
     Request.onreadystatechange = function(){
         if(Request.readyState == 4 && Request.status == 200){
-            console.log(Request.response);
-            console.log(Request.response['request_outcome']);
             if(Request.response['request_outcome'] == false){
-                console.log(Request.response['class']['account_id'] != null);
                 if(Request.response['class']['account_id'] != null && !Request.response['class']['account_id']){
                     loadPopup("popuplogin");
                 }
@@ -57,6 +53,10 @@ function sendForm(){
             }
             else if(Request.response['redirect']){
                 window.location.replace(Request.response['redirect']);
+            }
+            if(filename == '../php_requests/create_comment.php'){
+                requestPhp(pageObj.loadable.filename, pageObj.loadable.post_vars, pageObj.loadable.element_id);
+                document.getElementById("testsubject").value = "";
             }
             //document.getElementById(destination).innerHTML = Request.responseText;
         }
@@ -66,6 +66,7 @@ function sendForm(){
 
 function requestPhp(filename, post_vars, element_id){
     //var filename = pageObj.destination;
+    //console.log(post_vars);
     post_vars = JSON.stringify(post_vars);
     //console.log(post_vars);
     var Request = makeRequest();
@@ -73,7 +74,7 @@ function requestPhp(filename, post_vars, element_id){
     Request.setRequestHeader('Content-Type', 'application/json');
     Request.onreadystatechange = function(){
         if(Request.readyState == 4 && Request.status == 200){
-            console.log(Request.responseText);
+            //console.log(Request.responseText);
             if(element_id == "popupreportblog" || element_id == "popupreportcomment" || element_id == "deleteblog" || element_id == "deletecomment"){
                 unloadPopup(element_id);
             }
@@ -89,11 +90,11 @@ function fillErrors(response){
     var attributes = Object.keys(response);
     var element_id = "";
     var element = null;
-    console.log(attributes);
+    //console.log(attributes);
     for(let i = 0; i < attributes.length; i++){
         element_id = "error_" + attributes[i];
         element = document.getElementById(element_id);
-        console.log(element_id, element);
+        //console.log(element_id, element);
         if(element){
             if(response[attributes[i]]){
                 element.innerHTML = "";
@@ -130,8 +131,7 @@ class LoadableElement {
     }
 }
 
-function createLoadable(filename, element_id, post_id, page){
-    console.log("HEY");
+function createLoadable(filename, element_id, post_id, page, dict){
     var newLoadable = new LoadableElement(filename, element_id, post_id, page);
     pageObj.loadable = newLoadable;
     if(filename == "../loaders/load_comments.php"){
@@ -139,6 +139,10 @@ function createLoadable(filename, element_id, post_id, page){
     }
     else if (filename == "../loaders/load_blogposts.php"){
         newLoadable.post_vars["username"] = post_id;
+        if(dict){
+            newLoadable.post_vars["title"] = dict["title"];
+            newLoadable.post_vars["blog_tag"] = dict["blog_tag"];
+        }
     }
     newLoadable.post_vars["page"] = page;
     requestPhp(filename, newLoadable.post_vars, element_id);
@@ -166,6 +170,9 @@ function unloadPopup(element_id){
     }
     if(element_id == "deletecomment"){
         document.documentElement.style.setProperty('--deletecomment', "0%");
+    }
+    if(element_id == "popupimage"){
+        document.documentElement.style.setProperty('--popupimage', "0%");
     }
 }
 
@@ -210,15 +217,9 @@ function reportComment(){
 function addBlogTag(location){
     div = document.getElementById(location);
     var id = 0;
-    if(location == "blogtag_create"){
-        id = blogtagid_create;
-        blogtagid_create += 1;
-    }
-    else if(location == "blogtag_search"){
-        id = blogtagid_search;
-        blogtagid_search += 1;
-    }
-    div.insertAdjacentHTML('afterend','<div id="blogtag_' + id + '" class="inputrow padbottom"><input name="blog_tag[]" type="text" class="createbloginput form_input" required></input><button onclick="removeBlogtag(' + id + ')" class="svgbutton">Remove</button></div>');
+    id = blogtagid_total;
+    blogtagid_total += 1;
+    div.insertAdjacentHTML('afterend','<div id="blogtag_' + id + '" class="inputrow padbottom"><input name="blog_tag[]" type="text" class="createbloginput form_input"></input><button onclick="removeBlogtag(' + id + ')" class="svgbutton">Remove</button></div>');
     return;
 }
 
@@ -239,4 +240,9 @@ function deleteComment(){
     element_id = "deletecomment";
     post_vars = {"comment_id": selectedComment};
     requestPhp(filename, post_vars, element_id);
+}
+
+function popupimage(url){
+    document.documentElement.style.setProperty('--popupimage', "100%");
+    document.getElementById("zoomimage").src = url;
 }

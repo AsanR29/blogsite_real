@@ -28,6 +28,7 @@
     --popupreportcomment: 0%;
     --deleteblog: 0%;
     --deletecomment: 0%;
+    --popupimage: 0%;
 }
 
 html{
@@ -308,6 +309,19 @@ form{
     background-color: green;
 }
 
+#blog_pictures{
+    width: 100%;
+    height: fit-content;
+}
+.blog_pic{
+    width:auto;
+    height: calc(var(--user-lineheight)*4);
+    overflow: hidden;
+    background-position: left center;
+    background-repeat: no-repeat;
+    /*background-size: auto calc(min(100%, ));*/
+}
+
 #popuplogin{
     width: var(--popuplogin);
     height: var(--popuplogin);
@@ -327,4 +341,20 @@ form{
 #deletecomment{
     width: var(--deletecomment);
     height: var(--deletecomment);
+}
+#popupimage{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: var(--popupimage);
+    height: var(--popupimage);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow:hidden;
+}
+#zoomimage{
+    width: fit-content;
+    height: fit-content;
 }

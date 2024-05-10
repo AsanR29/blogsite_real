@@ -33,6 +33,6 @@ if(isset($_SESSION['account_id'])){
         $location = 'location: ../blogdaily/read.php?blog_url=' . $new_blog->blog_url;
     }
 }
-//header($location);
+header($location);
 
 ?>

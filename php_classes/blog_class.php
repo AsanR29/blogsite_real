@@ -49,18 +49,19 @@ Class BlogPost extends DatabaseEntity{
 
     static function loadBlogs($params){
         $blog_array = array();
+        $order = 'DESC';
+        $limit = 10;
+        $offset = 0;
+        if(isset($params['order'])){
+            $order = $params['order'];
+        }
+        if(isset($params['page'])){
+            $offset = $limit * intval($params['page']);
+        }
         if(isset($params['account_id'])){
-            $order = 'DESC';
-            $limit = 10;
-            $offset = 0;
-            if(isset($params['order'])){
-                $order = $params['order'];
-            }
-            if(isset($params['page'])){
-                $offset = $limit * intval($params['page']);
-            }
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Blog_posts WHERE account_id=:account_id ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+            $sql = 'SELECT * FROM Blog_posts WHERE account_id=:account_id ';
+            $sql .= 'ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
 
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':account_id', $params['account_id'], SQLITE3_INTEGER);
@@ -73,20 +74,52 @@ Class BlogPost extends DatabaseEntity{
             }
             $db->close();
         }
-        else{
-            $order = 'DESC';
-            $limit = 10;
-            $offset = 0;
-            if(isset($params['order'])){
-                $order = $params['order'];
-            }
-            if(isset($params['page'])){
-                $offset = $limit * intval($params['page']);
-            }
+        else if(isset($params['title'])){
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Blog_posts ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+            $sql = 'SELECT * FROM Blog_posts WHERE instr(lower(title), lower(:title)) ';
+            if(isset($params['blog_tag'])){
+                for($i = 0; $i < count($params['blog_tag']); $i++){
+                    $sql .= 'AND EXISTS (SELECT blog_tag_id FROM Blog_tags WHERE Blog_tags.blog_id=Blog_posts.blog_id AND tag_id = :tag_id_' . $i . ') ';
+                }
+            }
+            $sql .= 'ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+            $stmt = $db->prepare($sql);
+            $title = $params['title'];
+            $result = $stmt->bindValue(':title', $title, SQLITE3_TEXT);
+            if(isset($params['blog_tag'])){
+                for($i = 0; $i < count($params['blog_tag']); $i++){
+                    $tag_id_num = ':tag_id_' . $i;
+                    $tag_id = $params['blog_tag'][$i];
+                    $stmt->bindParam($tag_id_num, $tag_id, SQLITE3_INTEGER);
+                }
+            }
+            $result = $stmt->execute();
+            $i = 0;
+            while($row = $result->fetchArray()){
+                $blog_array[$i] = new BlogPost(false);
+                $blog_array[$i]->decryptValues($row);
+                $i += 1;
+            }
+            $db->close();
+        }
+        else{
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT * FROM Blog_posts ';
+            if(isset($params['blog_tag'])){
+                for($i = 0; $i < count($params['blog_tag']); $i++){
+                    $sql .= 'AND EXISTS (SELECT blog_tag_id FROM Blog_tags WHERE Blog_tags.blog_id=Blog_posts.blog_id AND tag_id = :tag_id_' . $i . ') ';
+                }
+            }
+            $sql .= 'ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
 
             $stmt = $db->prepare($sql);
+            if(isset($params['blog_tag'])){
+                for($i = 0; $i < count($params['blog_tag']); $i++){
+                    $tag_id_num = ':tag_id_' . $i;
+                    $tag_id = $params['blog_tag'][$i];
+                    $stmt->bindParam($tag_id_num, $tag_id, SQLITE3_INTEGER);
+                }
+            }
             $result = $stmt->execute();
             $i = 0;
             while($row = $result->fetchArray()){
@@ -161,6 +194,7 @@ Class BlogPost extends DatabaseEntity{
                 $stmt->bindParam(':blog_url', $blog_url, SQLITE3_TEXT);
                 $stmt->bindParam(':blog_id', $this->blog_id, SQLITE3_INTEGER);
                 $result = $stmt->execute();
+                $this->blog_url = $blog_url;
             }
             $db->close();
         }

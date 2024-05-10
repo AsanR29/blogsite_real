@@ -25,6 +25,22 @@ Class BlogTag {
         }
     }
 
+    static function loadTags($tag_names){
+        $tag_array = array();
+        $db = new SQLite3('../data/database.db');
+        for($i = 0; $i < count($tag_names); $i++){
+            $sql = 'SELECT tag_id FROM Tags WHERE tag_name=:tag_name';
+            $stmt = $db->prepare($sql);
+            $tag_name = $tag_names[$i];
+            $stmt->bindParam(':tag_name', $tag_name, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            $row = $result->fetchArray();
+            $tag_array[] = $row['tag_id'];
+        }
+        $db->close();
+        return $tag_array;
+    }
+
     static function loadBlogTags($params){
         $blog_tag_array = array();
         if(isset($params['blog_id'])){
@@ -32,7 +48,8 @@ Class BlogTag {
             $sql = 'SELECT * FROM Blog_tags INNER JOIN Tags ON Blog_tags.tag_id = Tags.tag_id WHERE blog_id=:blog_id';
             
             $stmt = $db->prepare($sql);
-            $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
+            $blog_id = $params['blog_id'];
+            $stmt->bindParam(':blog_id', $blog_id, SQLITE3_INTEGER);
             $result = $stmt->execute();
             $i = 0;
             while($row = $result->fetchArray()){

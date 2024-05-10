@@ -1,5 +1,6 @@
 <?php
 require_once('../php_classes/blog_class.php');
+require_once('../php_classes/blog_tag_class.php');
 require_once('../php_classes/account_class.php');
 $form = json_decode(file_get_contents('php://input'), true);
 $params = array();
@@ -14,6 +15,12 @@ if(isset($form['username']) && $form['username']){
 }
 if(isset($form['page'])){
     $params['page'] = $form['page'];
+}
+if(isset($form['title'])){
+    $params['title'] = $form['title'];
+}
+if(isset($form['blog_tag'])){
+    $params['blog_tag'] = BlogTag::loadTags($form['blog_tag']);
 }
 $blog_array = BlogPost::loadBlogs($params);
 

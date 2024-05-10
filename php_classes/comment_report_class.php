@@ -31,7 +31,7 @@ Class CommentReport {
         }
     }
 
-    static function loadCommentReports(){
+    static function loadCommentReports($params){
         $comment_report_array = array();
         if(isset($params['comment_id'])){
             $order = 'DESC';
@@ -40,10 +40,29 @@ Class CommentReport {
             }
             //AND resolved_date = null
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Comment_reports WHERE comment_id=:comment_id ORDER BY report_date ' . $order;
+            $sql = 'SELECT * FROM Comment_reports WHERE comment_id=:comment_id AND resolved_date IS NULL ORDER BY report_date ' . $order;
             
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':comment_id', $params['comment_id'], SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $i = 0;
+            while($row = $result->fetchArray()){
+                $comment_report_array[$i] = new CommentReport(false);
+                $comment_report_array[$i]->unpack($row);
+                $i += 1;
+            }
+            $db->close();
+        }
+        else{
+            $order = 'DESC';
+            if(isset($params['order'])){
+                $order = $params['order'];
+            }
+            //AND resolved_date = null
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT * FROM Comment_reports WHERE resolved_date IS NULL ORDER BY report_date ' . $order . ' LIMIT 1';
+            
+            $stmt = $db->prepare($sql);
             $result = $stmt->execute();
             $i = 0;
             while($row = $result->fetchArray()){
@@ -67,7 +86,7 @@ Class CommentReport {
             $result = $stmt->execute();
             if($result){
                 $row = $result->fetchArray();
-                $result = $this->unpack($row);
+                $this->unpack($row);
             }
             $db->close();
         }
@@ -99,6 +118,7 @@ Class CommentReport {
 
     function updateCommentReport($params){
         $result = false;
+        print_r($params);
         if(isset($params['resolved_date']) && $params['resolved_date']){
             $resolved_date = $params['resolved_date'];
             $db = new SQLite3('../data/database.db');

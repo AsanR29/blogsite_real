@@ -11,6 +11,17 @@ Class UserFile extends DatabaseEntity{
         $this->unpack($params);
     }
 
+    function getUrl(){
+        $file_end = "";
+        if($this->mime_type == "image/jpeg"){
+            $file_end = ".jpeg";
+        }
+        else if($this->mime_type == "video/mp4"){
+            $file_end = ".mp4";
+        }
+        return "../userfiles/" . $this->file_url . $file_end;
+    }
+
     function unpack($params){
         if(isset($params['file_id'])){
             $this->file_id = $params['file_id'];
@@ -129,14 +140,7 @@ Class UserFile extends DatabaseEntity{
                 $result = $stmt->execute();
                 if($result){
                     $this->file_url = $file_url;
-                    $file_end = "";
-                    if($this->mime_type == "image/jpeg"){
-                        $file_end = ".jpeg";
-                    }
-                    else if($this->mime_type == "video/mp4"){
-                        $file_end = ".mp4";
-                    }
-                    move_uploaded_file($this->attached_file['tmp_name'], "../userfiles/" . $this->file_url . $file_end);
+                    move_uploaded_file($this->attached_file['tmp_name'], "../userfiles/" . $this->getUrl());
                 }
             }
             $db->close();
@@ -148,19 +152,57 @@ Class UserFile extends DatabaseEntity{
         $result = false;
         if(isset($params['blog_id']) && $params['blog_id']){
             $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT file_url, mime_type FROM User_files WHERE blog_id=:blog_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $url_array = array();
+            while($row = $result->fetchArray()){
+                $url_array[] = $row;
+            }
             $sql = 'DELETE FROM User_files WHERE blog_id=:blog_id';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
             $result = $stmt->execute();
             $db->close();
+            for($i = 0; $i < count($url_array); $i++){
+                $file_end = "";
+                if($url_array[$i]['mime_type'] == "image/jpeg"){
+                    $file_end = ".jpeg";
+                }
+                else if($url_array[$i]['mime_type'] == "video/mp4"){
+                    $file_end = ".mp4";
+                }
+                $full_path = "../userfiles/" . $url_array[$i]['file_url'] . $file_end;
+                unlink($full_path);
+            }
         }
         else if(isset($params['account_id']) && $params['account_id']){
             $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT file_url, mime_type FROM User_files WHERE account_id=:account_id AND blog_id=null';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':account_id', $params['account_id'], SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $url_array = array();
+            while($row = $result->fetchArray()){
+                $url_array[] = $row;
+            }
             $sql = 'DELETE FROM User_files WHERE account_id=:account_id AND blog_id=null';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':account_id', $params['account_id'], SQLITE3_INTEGER);
             $result = $stmt->execute();
             $db->close();
+            for($i = 0; $i < count($url_array); $i++){
+                $file_end = "";
+                if($url_array[$i]['mime_type'] == "image/jpeg"){
+                    $file_end = ".jpeg";
+                }
+                else if($url_array[$i]['mime_type'] == "video/mp4"){
+                    $file_end = ".mp4";
+                }
+                $full_path = "../userfiles/" . $url_array[$i]['file_url'] . $file_end;
+                unlink($full_path);
+            }
         }
         return $result;
     }
@@ -174,6 +216,7 @@ Class UserFile extends DatabaseEntity{
             $stmt->bindParam(':file_id', $this->file_id, SQLITE3_INTEGER);
             $result = $stmt->execute();
             $db->close();
+            unlink("../userfiles/" . $this->getUrl());
         }
         return $result;
     }
