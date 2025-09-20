@@ -5,6 +5,7 @@ CREATE TABLE "Accounts" (
 	"email"	TEXT UNIQUE,
 	"account_type"	INTEGER,
 	"email_code"	TEXT,
+    "bio"   TEXT,
 	PRIMARY KEY("account_id" AUTOINCREMENT)
 );
 

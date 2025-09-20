@@ -26,8 +26,8 @@
                 </div>
                 <div class="popupB2">
                     <div id="inputrow" class="floatright">
-                        <button class="svgbutton floatright" onclick="reportComment()">Report</button>
-                        <button class="svgbutton floatright" onclick="unloadPopup('popupreportcomment')">Back</button>
+                        <button class="gen_button floatright" onclick="reportComment()">Report</button>
+                        <button class="gen_button floatright" onclick="unloadPopup('popupreportcomment')">Back</button>
                     </div>
                 </div>
             </div>

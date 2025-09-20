@@ -2,7 +2,7 @@
 require_once('databaseEntity_class.php');
 
 Class Account extends DatabaseEntity{
-    public $account_id, $username, $password, $email, $account_type, $email_code;
+    public $account_id, $username, $password, $email, $account_type, $email_code, $bio;
 
     function __construct($params){
         parent::__construct("Accounts");
@@ -27,6 +27,9 @@ Class Account extends DatabaseEntity{
         }
         if(isset($params['email_code'])){
             $this->email_code= $params['email_code'];
+        }
+        if(isset($params['bio'])){
+            $this->bio = $params['bio'];
         }
     }
 
@@ -163,6 +166,24 @@ Class Account extends DatabaseEntity{
             }
             $db->close();
         }
+        else if(isset($params['username']) && $params['username'] != $this->username){
+            $db = new SQLite3('../data/database.db');
+            $this->username = $params['username'];
+            $result = $this->checkUnique($db);
+            if($result){
+                $username = $this->username;
+
+                $sql = 'UPDATE Accounts SET username=:username WHERE account_id=:account_id';
+                $stmt = $db->prepare($sql);
+                $stmt->bindParam(':username', $username, SQLITE3_TEXT);
+                $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
+                $result = $stmt->execute();
+                if($result){
+                    $this->username = $username;
+                }
+            }
+            $db->close();
+        }
         else if(isset($params['email_code'])){
             $email_code = $this->createCode();
             $db = new SQLite3('../data/database.db');
@@ -184,6 +205,17 @@ Class Account extends DatabaseEntity{
             $sql = 'UPDATE Accounts SET password=:password WHERE account_id=:account_id';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':password', $password, SQLITE3_TEXT);
+            $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $db->close();
+        }
+        else if(isset($params['bio']) && $params['bio'] != $this->bio){
+            $this->bio = $params['bio'];
+
+            $db = new SQLite3('../data/database.db');
+            $sql = 'UPDATE Accounts SET bio=:bio WHERE account_id=:account_id';
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':bio', $this->bio, SQLITE3_TEXT);
             $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
             $result = $stmt->execute();
             $db->close();

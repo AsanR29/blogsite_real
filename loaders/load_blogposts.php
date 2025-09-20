@@ -19,17 +19,32 @@ if(isset($form['page'])){
 if(isset($form['title'])){
     $params['title'] = $form['title'];
 }
-if(isset($form['blog_tag'])){
-    $params['blog_tag'] = BlogTag::loadTags($form['blog_tag']);
-}
+//if(isset($form['blog_tag'])){
+session_start();
+
+$params['blog_tag'] = BlogTag::loadTags($_SESSION['blogtags']);//$form['blog_tag']);
+//}
+
 $blog_array = BlogPost::loadBlogs($params);
 
 for($i = 0; $i < count($blog_array); $i++):
 ?>
-<section>
+<section class="blogpr blogpreview">
     <div><output class="titlesize"><?php echo $blog_array[$i]->title; ?></output></div>
-    <div><output class="editing"><?php echo substr($blog_array[$i]->contents, 0, 300) . '...'; ?></output></div>
-    <div><a class="labelgen" href="../blogdaily/read.php?blog_url=<?php echo $blog_array[$i]->blog_url; ?>">Read more</a></div>
+    <div class="blogp">
+        <div class="blogpL1 blogpr"></div>
+        <div class="blogpM1">
+            <div class="blogt"><p class="b_text"><?php echo substr($blog_array[$i]->contents, 0, 300) . '...'; ?></p></div>
+            <div class="blogt"><a class="labelgen" href="../blogdaily/read.php?blog_url=<?php echo $blog_array[$i]->blog_url; ?>">Read more</a></div>
+        </div>
+        <div class="blogpR1 blogpr"></div>
+    </div>
+    <div class="blogfoot blogpr"></div>
 </section>
 <div id="mainbuffer"></div>
 <?php endfor; ?>
+<?php if(count($blog_array) == 0): ?>
+<section>
+    <div><output class="titlesize" style="color:grey">No results</h2></div>
+</section>
+<?php endif; ?>

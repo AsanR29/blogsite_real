@@ -1,10 +1,12 @@
+<?php 
+if(isset($account_type) && $account_type == 3):
+    require_once('../loaders/admin_left.php');
+else: ?>
+    
+
 <div id="historybox">
-    <div id="arrowsbox">
-        <div id="leftarrow" class="arrow"></div>
-        <div id="rightarrow" class="arrow"></div>
-    </div>
     <div id="historylist">
-        <ul>History:
+        <ul class="simplelist"><label id="wordhistory"class="navsize">History:</label>
             <?php
                 if(!isset($_SESSION['history'])){
                     $_SESSION['history'] = array(
@@ -14,7 +16,7 @@
                 }
                 for($i = count($_SESSION['history']['url']) -1; $i > -1; $i -=1):
             ?>
-            <li>
+            <li class="listitem">
                 <a href="../blogdaily/read.php?blog_url=<?php echo $_SESSION['history']['url'][$i]; ?>">
                     <?php echo $_SESSION['history']['title'][$i]; ?>
                 </a>
@@ -24,3 +26,4 @@
     </div>
 </div>
 <div id="leftgap"></div>
+<?php endif; ?>

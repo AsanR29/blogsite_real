@@ -19,7 +19,18 @@ Class UserFile extends DatabaseEntity{
         else if($this->mime_type == "video/mp4"){
             $file_end = ".mp4";
         }
-        return "../userfiles/" . $this->file_url . $file_end;
+
+        if($this->file_url){
+            return "../userfiles/" . $this->file_url . $file_end;
+        }
+        else if(!in_array($this->file_use, UserFile::$blog_only)){
+            if($this->file_use == "pfp"){
+                return "../css/defaultpfp.png";
+            }
+            else{
+                return "../userfiles/-1";
+            }
+        }
     }
 
     function unpack($params){
@@ -75,7 +86,7 @@ Class UserFile extends DatabaseEntity{
             $result = $stmt->execute();
             if($result){
                 $row = $result->fetchArray();
-                $result = $this->unpack($row);
+                $this->unpack($row);
             }
             $db->close();
         }
@@ -96,6 +107,13 @@ Class UserFile extends DatabaseEntity{
             $new_file = new UserFile($params);
             $result = $new_file->attachFile($the_file);
             if($result){
+                if(!in_array($new_file->file_use, UserFile::$blog_only)){   //its either a pfp or banner, which there can only be 1 of
+                    $old_file = new UserFile($params);
+                    $result = $old_file->loadFile();
+                    if($result){
+                        $old_file->deleteFile();
+                    }
+                }
                 $result = $new_file->createFile();
             }
             $result_array[$i] = $result;

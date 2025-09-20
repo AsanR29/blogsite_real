@@ -67,6 +67,22 @@ Class Comment extends DatabaseEntity{
             }
             $db->close();
         }
+        else if(isset($params['comment_id'])){
+            $order = 'DESC';
+            $limit = 1;
+            $offset = 0;
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT Comments.*, Accounts.username FROM Comments JOIN Accounts ON Comments.account_id = Accounts.account_id WHERE comment_id=:comment_id ORDER BY comment_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':comment_id', $params['comment_id'], SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            if($row = $result->fetchArray()){
+                $comment_array[0] = new Comment(false);
+                $comment_array[0]->decryptValues($row);
+                $comment_array[0]->username = $row['username'];
+            }
+            $db->close();
+        }
         return $comment_array;
     }
 

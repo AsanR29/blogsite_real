@@ -1,0 +1,257 @@
+/*left*/
+#adminbox{
+    border-width:0px;
+    border-right-width:1px;
+    border-style:solid;
+    border-color: #DDDDDD;
+    background-color: #F0F0F0;
+
+    width: 20%;
+    height: 100vh;
+}
+#blogreportslink{
+    width: 100%;
+    height: 8%;
+    background-color:transparent;
+
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: #DDDDDD;
+    border-style: solid;
+}
+#blogreportslink:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: #BBBBBB;
+}
+#commentreportslink{
+    width: 100%;
+    height: 8%;
+    background-color:transparent;
+
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: #DDDDDD;
+    border-style: solid;
+}
+#commentreportslink:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: #BBBBBB;
+}
+
+#historybox{
+    width: 15%;
+    height: 100%;
+    background-color:rgba(255, 255, 255, 0.1);
+}
+#arrowsbox{
+    display: flex;
+    width: 100%;
+    height: 10%;
+}
+.arrow{
+    width: 50%;
+    height: 100%;
+}
+#leftarrow{
+    background-color:transparent;
+}
+#rightarrow{
+    background-color:transparent;
+}
+#historylist{
+    width: 100%;
+    height: 90%;
+    overflow-y: hidden;
+}
+
+#leftgap{
+    width: 5%;
+    height:100%;
+}
+
+/*right*/
+#rightgap{
+    width: 5%;
+    height: 100%;
+}
+#navbox{
+    border-width:0px;
+    border-left-width:1px;
+    border-style:solid;
+    border-color:#DDDDDD;
+
+    width: 30%;
+    height: 100vh;
+    /*background-color: rgba(255, 255, 255, 0.1);*/
+}
+#searchlink{
+    width: 100%;
+    height: 8%;
+    background-color:transparent;
+
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: #DDDDDD;
+    border-style: solid;
+}
+
+#searchlink:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: #BBBBBB;
+}
+.blogtagbutton{
+    display: inline-block;
+}
+
+#blogtagarea{
+    height:fit-content;
+    width: 100%;
+    height: 70%;
+    overflow-y: scroll;
+    overflow-x:hidden;
+}
+#profilelink{
+    width: 100%;
+    height: 8%;
+    background-color:transparent;
+
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: #DDDDDD;
+    border-style: solid;
+}
+#profilelink:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: #BBBBBB;
+}
+#settingslink{
+    width: 100%;
+    height: 10%;
+    background-color:transparent;
+
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: #DDDDDD;
+    border-style: solid;
+
+    margin:auto;
+}
+#settingslink:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: #BBBBBB;
+}
+.simplelist{
+    list-style-type:square;
+    padding-left: 10px;
+}
+
+.listitem{
+    margin-left:10px;
+}
+
+
+
+
+.content{
+    width: 100%;
+    height: fit-content;
+}
+
+.extra{
+    width: 25%;
+    height: 100vh;
+}
+
+.brow{
+    border-block-start-width: var(--brow-s-h);
+    border-block-end-width: 0px;
+
+    border-block-start-color: var(--brow-s-c);
+    border-block-end-color: var(--brow-e-c);
+
+    border-block-start-style: solid;
+    border-block-end-style: solid;
+
+}
+
+.nav-grid{
+    width: 100%;
+    padding: 0px;
+    /*background-color: var(--brow-e-c);*/
+    display: flex;
+}
+
+.nav-cell{
+    width:10%;
+    box-sizing: border-box;
+
+    background-color: var(--cell-bg-c);
+    color: var(--cell-tx-c);
+
+    padding: 0px; /*var(--line-0);
+    border-left-width: var(--line-0);
+    border-right-width: var(--line-0);
+    
+    border-left-color: var(--brow-e-c);
+    border-right-color: var(--brow-e-c);
+
+    border-style: solid;*/
+
+    text-align: center;
+    font-size: var(--line-3);
+
+    height: var(--line-6);
+}
+
+.nav-cell:hover{
+    background-color: var(--brow-s-c);
+    color: var(--cell-hv-c);
+
+    border-block-end-width: 5px;
+}
+.weirdform{
+    width:100%;
+}
+
+#searchbox{
+    height: 100%;
+    font-family: var(--font);
+    resize: none;
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+
+    background-color: rgba(0, 0, 0, 0.05);
+    border-width: 0px;
+
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow-wrap: anywhere;
+    overflow:hidden;
+}
+#searchbox:focus-visible{
+    outline: transparent;
+    border-width: 0px;
+}
+#searchbox:hover{
+    background-color: var(--brow-s-c);
+}
+
+.searchbar{
+    width: 70%;
+}
+
+#createprompt{
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: #DDDDDD;
+    border-style: solid;
+}
+#createprompt:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: #BBBBBB;
+}
+
+#wordhistory{
+    text-decoration: underline;
+}

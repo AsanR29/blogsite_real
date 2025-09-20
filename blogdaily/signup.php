@@ -1,4 +1,4 @@
-
+<?php $pagetitle = "New account"; ?>
 <?php require_once('../loaders/header.php'); ?>
 <body onload='pageObj = new CurrentPage([], "../php_requests/create_account.php"); updateCssSize();'>
 <?php require_once('../loaders/nav_left.php'); ?>
@@ -32,9 +32,8 @@
     </div>
     <?php endif; ?>
 </form>
-<div><button  class="svgbutton floatright" onclick="sendForm()">Sign up</button></div>
+<div><button  class="gen_button floatright" onclick="sendForm()">Sign up</button></div>
 
 <?php require_once('../loaders/main_bottom.php'); ?>
-<?php require_once('../loaders/nav_right.php'); ?>
 </body>
 </html>

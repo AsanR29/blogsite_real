@@ -13,12 +13,12 @@
                 <div class="popupB2">
                     <div id="inputrow" class="floatright">
                         <a href="../blogdaily/login.php">
-                            <button class="svgbutton floatright">Log in</button>
+                            <button class="gen_button floatright">Log in</button>
                         </a>
                         <a href="../blogdaily/signup.php">
-                            <button class="svgbutton floatright">Sign up</button>
+                            <button class="gen_button floatright">Sign up</button>
                         </a>
-                        <button class="svgbutton floatright" onclick="unloadPopup('popuplogin')">Back</button>
+                        <button class="gen_button floatright" onclick="unloadPopup('popuplogin')">Back</button>
                     </div>
                 </div>
             </div>

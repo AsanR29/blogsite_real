@@ -8,6 +8,7 @@
         header('location: ../blogdaily/search.php');
     }
 ?>
+<?php $pagetitle = $username . "'s blog"; ?>
 <body onload='
     pageObj = new CurrentPage([], "");
     createLoadable("../loaders/load_blogposts.php", "blog_section", "<?php echo $username; ?>", 0);
@@ -17,15 +18,15 @@
 
 
 <article>
+    <?php require_once('../loaders/nav_middle.php'); ?>
     <div id="blog_section">
     </div>
     <div id="inputrow">
-        <button class="svgbutton floatright" onclick="movePage(1);">Next page</button>
-        <button class="svgbutton floatright" onclick="movePage(-1);">Previous page</button>
+        <button class="gen_button floatright" onclick="movePage(1);">Next page</button>
+        <button class="gen_button floatright" onclick="movePage(-1);">Previous page</button>
     </div>
 </article>
 
 <?php require_once('../loaders/main_bottom.php'); ?>
-<?php require_once('../loaders/nav_right.php'); ?>
 </body>
 </html>

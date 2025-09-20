@@ -1,4 +1,7 @@
-
+<?php $pagetitle = '
+    <div id="createprompt" class="textcenter">
+        <a class="titlesize notalink" href="../blogdaily/create.php">Create a Blog Post</a>
+    </div>'; ?>
 <?php require_once('../loaders/header.php'); ?>
 <?php
     if(isset($_SESSION['username']) && $_SESSION['username']){
@@ -16,18 +19,15 @@
 <?php require_once('../loaders/main_top.php'); ?>
 
 <article>
-    <div class="textcenter">
-        <a class="titlesize notalink" href="../blogdaily/create.php">Create a Blog Post</a>
-    </div>
+    <?php require_once('../loaders/nav_middle.php'); ?>
     <div id="blog_section">
     </div>
     <div id="inputrow">
-        <button class="svgbutton floatright" onclick="movePage(1);">Next page</button>
-        <button class="svgbutton floatright" onclick="movePage(-1);">Previous page</button>
+        <button class="gen_button floatright" onclick="movePage(1);">Next page</button>
+        <button class="gen_button floatright" onclick="movePage(-1);">Previous page</button>
     </div>
 </article>
 
 <?php require_once('../loaders/main_bottom.php'); ?>
-<?php require_once('../loaders/nav_right.php'); ?>
 </body>
 </html>

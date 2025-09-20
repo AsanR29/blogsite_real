@@ -60,7 +60,7 @@ Class BlogPost extends DatabaseEntity{
         }
         if(isset($params['account_id'])){
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Blog_posts WHERE account_id=:account_id ';
+            $sql = 'SELECT * FROM Blog_posts WHERE visibility=2 AND account_id=:account_id ';
             $sql .= 'ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
 
             $stmt = $db->prepare($sql);
@@ -76,10 +76,10 @@ Class BlogPost extends DatabaseEntity{
         }
         else if(isset($params['title'])){
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Blog_posts WHERE instr(lower(title), lower(:title)) ';
+            $sql = 'SELECT * FROM Blog_posts WHERE visibility=2 AND instr(lower(title), lower(:title)) ';
             if(isset($params['blog_tag'])){
                 for($i = 0; $i < count($params['blog_tag']); $i++){
-                    $sql .= 'AND EXISTS (SELECT blog_tag_id FROM Blog_tags WHERE Blog_tags.blog_id=Blog_posts.blog_id AND tag_id = :tag_id_' . $i . ') ';
+                    $sql .= 'AND EXISTS (SELECT Blog_tags.blog_tag_id FROM Blog_tags WHERE Blog_tags.blog_id=Blog_posts.blog_id AND Blog_tags.tag_id = :tag_id_' . $i . ') ';
                 }
             }
             $sql .= 'ORDER BY blog_datetime ' . $order . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
@@ -90,7 +90,7 @@ Class BlogPost extends DatabaseEntity{
                 for($i = 0; $i < count($params['blog_tag']); $i++){
                     $tag_id_num = ':tag_id_' . $i;
                     $tag_id = $params['blog_tag'][$i];
-                    $stmt->bindParam($tag_id_num, $tag_id, SQLITE3_INTEGER);
+                    $stmt->bindValue($tag_id_num, $tag_id, SQLITE3_INTEGER);
                 }
             }
             $result = $stmt->execute();
@@ -104,7 +104,7 @@ Class BlogPost extends DatabaseEntity{
         }
         else{
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM Blog_posts ';
+            $sql = 'SELECT * FROM Blog_posts WHERE visibility=2 ';
             if(isset($params['blog_tag'])){
                 for($i = 0; $i < count($params['blog_tag']); $i++){
                     $sql .= 'AND EXISTS (SELECT blog_tag_id FROM Blog_tags WHERE Blog_tags.blog_id=Blog_posts.blog_id AND tag_id = :tag_id_' . $i . ') ';
@@ -117,7 +117,7 @@ Class BlogPost extends DatabaseEntity{
                 for($i = 0; $i < count($params['blog_tag']); $i++){
                     $tag_id_num = ':tag_id_' . $i;
                     $tag_id = $params['blog_tag'][$i];
-                    $stmt->bindParam($tag_id_num, $tag_id, SQLITE3_INTEGER);
+                    $stmt->bindValue($tag_id_num, $tag_id, SQLITE3_INTEGER);
                 }
             }
             $result = $stmt->execute();
@@ -176,7 +176,6 @@ Class BlogPost extends DatabaseEntity{
             $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
             if(!$this->blog_datetime){
                 $this->blog_datetime = date('Y-m-d H:i:s');
-                echo $this->blog_datetime;
             }
             $stmt->bindParam(':blog_datetime', $this->blog_datetime, SQLITE3_TEXT);
             $stmt->bindParam(':visibility', $this->visibility, SQLITE3_INTEGER);
@@ -207,7 +206,7 @@ Class BlogPost extends DatabaseEntity{
             $this->unpack($params);
             $contents = $this->encrypt($this->contents);
             $db = new SQLite3('../data/database.db');
-            $sql = 'UPDATE Blog_posts SET visbility=:visibility, title=:title, contents=:contents WHERE blog_id=:blog_id';
+            $sql = 'UPDATE Blog_posts SET visibility=:visibility, title=:title, contents=:contents WHERE blog_id=:blog_id';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':visibility', $this->visibility, SQLITE3_INTEGER);
             $stmt->bindParam(':title', $this->title, SQLITE3_TEXT);
@@ -216,10 +215,10 @@ Class BlogPost extends DatabaseEntity{
             $result = $stmt->execute();
             $db->close();
         }
-        else if(isset($params['visibility']) && $params['visibility'] != $this->visbility){
+        else if(isset($params['visibility']) && $params['visibility'] != $this->visibility){
             $this->visibility = $params['visibility'];
             $db = new SQLite3('../data/database.db');
-            $sql = 'UPDATE Blog_posts SET visbility=:visibility WHERE blog_id=:blog_id';
+            $sql = 'UPDATE Blog_posts SET visibility=:visibility WHERE blog_id=:blog_id';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':visibility', $this->visibility, SQLITE3_INTEGER);
             $stmt->bindParam(':blog_id', $this->blog_id, SQLITE3_INTEGER);

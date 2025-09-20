@@ -1,6 +1,7 @@
 var pageObj;
 var selectedComment = false;
 blogtagid_total = 1;
+pres_total = 1;
 
 function getFormElements(type){
     var elements = [];
@@ -215,17 +216,109 @@ function reportComment(){
 }
 
 function addBlogTag(location){
+    text = document.getElementById("tag_source").innerHTML;
+    text = text.trim();
+    text = text.replace("<br>", "");
+    if(text == ""){
+        return;
+    }
+    //---
+    post_vars = {"blogtag":text};
+    post_vars = JSON.stringify(post_vars);
+    var Request = makeRequest();
+    Request.open("POST", "../php_requests/update_blogtag.php");
+    Request.setRequestHeader('Content-Type', 'application/json');
+    
+    Request.send(post_vars);
+    //---
+
     div = document.getElementById(location);
     var id = 0;
-    id = blogtagid_total;
-    blogtagid_total += 1;
-    div.insertAdjacentHTML('afterend','<div id="blogtag_' + id + '" class="inputrow padbottom"><input name="blog_tag[]" type="text" class="createbloginput form_input"></input><button onclick="removeBlogtag(' + id + ')" class="svgbutton">Remove</button></div>');
+    id = pres_total;
+    pres_total += 1;
+    div.insertAdjacentHTML('afterend','<div id="pres_blogtag_' + id + '" class="blogtagdiv"><span name="blogtag_' + id + '" class="blog_tag">' + text + '</span><button onclick="removeBlogtag(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
     return;
 }
 
 function removeBlogtag(id){
     div = document.getElementById("blogtag_"+id);
     div.outerHTML = "";
+
+    //---
+    post_vars = {"index":id};
+    post_vars = JSON.stringify(post_vars);
+    var Request = makeRequest();
+    Request.open("POST", "../php_requests/update_blogtag.php");
+    Request.setRequestHeader('Content-Type', 'application/json');
+    
+    Request.send(post_vars);
+    //---
+    return;
+}
+
+function clearTags(){
+    let id = 0;
+    div = document.getElementById("blogtag_"+id);
+    while(div){
+        div.outerHTML = "";
+        id += 1;
+        div = document.getElementById("blogtag_"+id);
+    }
+
+    //---
+    var Request = makeRequest();
+    Request.open("POST", "../php_requests/clear_blogtags.php");
+    Request.setRequestHeader('Content-Type', 'application/json');
+    Request.onreadystatechange = function(){
+        if(Request.readyState == 4 && Request.status == 200){
+            div = document.getElementById("blogtagarea");
+            div.innerHTML = Request.responseText;
+        }
+    }
+    Request.send();
+    //---
+    return;
+}
+
+function addNewBlogTag(location){
+    text = document.getElementById("tag_source_new").innerText;
+    text = text.trim();
+    text = text.replace("<br>", "");
+    if(text == ""){
+        return;
+    }
+
+    div = document.getElementById(location);
+    var id = 0;
+    try{
+        if(pageObj.header_vars[0] != -1){
+            blogtagid_total = parseInt(pageObj.header_vars[0]);
+            pageObj.header_vars[0] = -1;
+            id = blogtagid_total;
+            blogtagid_total += 1;
+        }
+        else{
+            id = blogtagid_total;
+            blogtagid_total += 1;
+        }
+    }
+    catch{
+        id = blogtagid_total;
+        blogtagid_total += 1;
+    }
+
+    div.insertAdjacentHTML('beforeend','<div id="blogtagvis_' + id + '" class="blogtagdiv"><span name="blogtag_' + id + '" class="blog_tag">' + text + '</span><button onclick="removeNewBlogtag(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+    div.insertAdjacentHTML('afterend','<div hidden id="blogtagnew_' + id + '"><input name="blog_tag[]" hidden value="' + text + '"></input></div>');
+    return;
+}
+
+function removeNewBlogtag(id){
+    div = document.getElementById("blogtagvis_"+id);
+    div.outerHTML = "";
+
+    div = document.getElementById("blogtagnew_"+id);
+    div.outerHTML = "";
+    return;
 }
 
 function deleteBlog(blog_url){

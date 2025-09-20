@@ -118,7 +118,7 @@ Class CommentReport {
 
     function updateCommentReport($params){
         $result = false;
-        print_r($params);
+        //print_r($params);
         if(isset($params['resolved_date']) && $params['resolved_date']){
             $resolved_date = $params['resolved_date'];
             $db = new SQLite3('../data/database.db');

@@ -20,6 +20,20 @@ textarea:focus-visible{
     background-color: rgba(0, 0, 0, 0.2);
 }
 
+.b_text{
+    font-family: var(--font);
+    resize: none;
+    font-size: var(--user-fontsize);
+    line-height: var(--user-lineheight);
+
+    border-width: 0px;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow-wrap: anywhere;
+    overflow:hidden;
+}
+
 div#shadowArea{
     font-family: var(--font);
     font-size: var(--user-fontsize);

@@ -1,4 +1,4 @@
-
+<?php $pagetitle = "Log in"; ?>
 <?php require_once('../loaders/header.php'); ?>
 <body onload='pageObj = new CurrentPage([], "../php_requests/login_account.php"); updateCssSize();'>
 <?php require_once('../loaders/nav_left.php'); ?>
@@ -16,9 +16,8 @@
     <label id="error_password" class="labelerror"></label>
 </div>
 </form>
-<div><button class="svgbutton floatright" onclick="sendForm()">Log in</button></div>
+<div><button class="gen_button floatright" onclick="sendForm()">Log in</button></div>
 
 <?php require_once('../loaders/main_bottom.php'); ?>
-<?php require_once('../loaders/nav_right.php'); ?>
 </body>
 </html>

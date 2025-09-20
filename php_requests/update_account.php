@@ -15,10 +15,18 @@ else{
         if($new_account->account_type == 3){
             $location = '../blogdaily/search.php';
         }
-        echo json_encode([
-            'request_outcome'=>true,
-            'redirect'=>$location
-        ]);
+        if($new_account->account_type == 1){    //redirect people who've been newly unverified
+            $_SESSION['temp_id'] = $new_account->account_id;
+            echo json_encode([
+                'request_outcome'=>true,
+                'redirect'=>$location
+            ]);
+        }
+        else{
+            echo json_encode([
+                'request_outcome'=>true
+            ]);
+        }
     }
     else{
         $new_account->removeIV();

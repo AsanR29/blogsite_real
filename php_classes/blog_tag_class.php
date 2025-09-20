@@ -35,7 +35,12 @@ Class BlogTag {
             $stmt->bindParam(':tag_name', $tag_name, SQLITE3_TEXT);
             $result = $stmt->execute();
             $row = $result->fetchArray();
-            $tag_array[] = $row['tag_id'];
+            if($row){
+                $tag_array[] = $row['tag_id'];
+            }
+            else{
+                $tag_array[] = -1;
+            }
         }
         $db->close();
         return $tag_array;

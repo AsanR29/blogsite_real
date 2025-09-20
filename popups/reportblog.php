@@ -26,8 +26,8 @@
                 </div>
                 <div class="popupB2">
                     <div id="inputrow" class="floatright">
-                        <button class="svgbutton floatright" onclick="reportBlog('<?php echo $blog_url; ?>')">Report</button>
-                        <button class="svgbutton floatright" onclick="unloadPopup('popupreportblog')">Back</button>
+                        <button class="gen_button floatright" onclick="reportBlog('<?php echo $blog_url; ?>')">Report</button>
+                        <button class="gen_button floatright" onclick="unloadPopup('popupreportblog')">Back</button>
                     </div>
                 </div>
             </div>

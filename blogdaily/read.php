@@ -1,4 +1,3 @@
-
 <?php require_once('../loaders/header.php'); ?>
 <?php
 $blog_url = "";
@@ -12,6 +11,8 @@ if(isset($_GET['blog_url'])){
     updateCssSize();'>
 <script type="text/javascript" src="../javascript_imports/textarea.js"></script>
 <?php require_once('../loaders/nav_left.php'); ?>
+<?php require_once('../php_requests/load_blog.php'); ?>
+<?php $pagetitle = $blog->title; ?>
 <?php require_once('../loaders/main_top.php'); ?>
 
 <?php require_once('../popups/login.php'); ?>
@@ -23,32 +24,35 @@ if(isset($_GET['blog_url'])){
 
 <?php require_once('../php_classes/file_class.php'); ?>
 
-<?php require_once('../php_requests/load_blog.php'); ?>
+
+
 <article>
-    <output class="titlesize"><?php echo $blog->title; ?></output>
-    <div id="mainbuffer"></div>
-    <output class="editing"><?php echo $blog->contents; ?></output>
+    <?php require_once('../loaders/nav_middle.php'); ?>
+    <p class="b_text"><?php echo nl2br($blog->contents); ?></p>
     <div id="blog_pictures">
         <?php require_once('../loaders/load_pics.php'); ?>
     </div>
     <div class="linebreak">
-        <label class="svgbutton">Posted: <?php echo $blog->blog_datetime; ?></label>
+        <label class="info_span">Posted: <?php echo $blog->blog_datetime; ?></label>
     <?php if($account_id){
         if($account_id == $blog->account_id): ?>
-            <button onclick="loadPopup('deleteblog')" class="svgbutton floatright">Delete</button>
+            <button onclick="loadPopup('deleteblog')" class="gen_button floatright">Delete</button>
+            <a href="../blogdaily/edit.php?blog_url=<?php echo $blog->blog_url; ?>"><button class="gen_button floatright">Edit</button></a>
         <?php else: ?>
-            <button onclick="loadPopup('popupreportblog')" class="svgbutton floatright">Report</button>
+            <button onclick="loadPopup('popupreportblog')" class="gen_button floatright">Report</button>
         <?php endif; } ?>
+        <a class ="tumblr-link" title="Share on Tumblr" href="https://www.tumblr.com/widgets/share/tool?canonicalUrl=https://localhost/blogsite_resit/blogdaily/read.php?blog_url=<?php echo $blog->blog_url; ?>&caption=Check%20out%20my%20blog"><button class="gen_button floatright">Share on Tumblr</button></a>
     </div>
     
     <div id="leave_comment">
         <?php require_once('../loaders/comment_box.php'); ?>
     </div>
+    
     <div id="comment_section">
     </div>
     <div id="inputrow">
-        <button class="svgbutton floatright" onclick="movePage(1);">Next page</button>
-        <button class="svgbutton floatright" onclick="movePage(-1);">Previous page</button>
+        <button class="gen_button floatright" onclick="movePage(1);">Next page</button>
+        <button class="gen_button floatright" onclick="movePage(-1);">Previous page</button>
     </div>
 </article>
 <?php
@@ -66,6 +70,5 @@ if(isset($_GET['blog_url'])){
     }
 ?>
 <?php require_once('../loaders/main_bottom.php'); ?>
-<?php require_once('../loaders/nav_right.php'); ?>
 </body>
 </html>

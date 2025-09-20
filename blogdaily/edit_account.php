@@ -1,4 +1,4 @@
-
+<?php $pagetitle = "Edit Account details"; ?>
 <?php require_once('../loaders/header.php'); ?>
 <body onload='pageObj = new CurrentPage([], "../php_requests/update_account.php"); updateCssSize();'>
 <?php require_once('../loaders/nav_left.php'); ?>
@@ -21,9 +21,8 @@ $account->loadAccount();
         <label id="error_email" class="labelerror"></label>
     </div>
 </form>
-<div><button  class="svgbutton floatright" onclick="sendForm()">Update</button></div>
+<div><button  class="gen_button floatright" onclick="sendForm()">Update</button></div>
 
 <?php require_once('../loaders/main_bottom.php'); ?>
-<?php require_once('../loaders/nav_right.php'); ?>
 </body>
 </html>

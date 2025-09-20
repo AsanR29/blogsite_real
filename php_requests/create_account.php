@@ -14,6 +14,9 @@ else{
         if($new_account->account_type == 3){
             $location = '../blogdaily/search.php';
         }
+        else{
+            $_SESSION['temp_id'] = $new_account->account_id;
+        }
         echo json_encode([
             'request_outcome'=>true,
             'redirect'=>$location

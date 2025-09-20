@@ -1,4 +1,4 @@
-
+<?php $pagetitle = "Verify your email"; ?>
 <?php require_once('../loaders/header.php'); ?>
 <?php require_once('../php_classes/account_class.php'); ?>
 <body onload='pageObj = new CurrentPage([], "../php_requests/verify_email.php"); updateCssSize();'>
@@ -50,9 +50,8 @@
         <label id="error_email_code" class="labelerror"></label>
     </div>
 </form>
-<div><button  class="svgbutton floatright" onclick="sendForm()">Sign up</button></div>
+<div><button  class="gen_button floatright" onclick="sendForm()">Sign up</button></div>
 
 <?php require_once('../loaders/main_bottom.php'); ?>
-<?php require_once('../loaders/nav_right.php'); ?>
 </body>
 </html>
