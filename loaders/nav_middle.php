@@ -43,6 +43,10 @@
                 <a class="notalink" href="../blogdaily/signup.php"><button class="nobutton">Sign up</button></a>
             <?php endif; ?>
         </div>
+        <?php if(isset($account_id) && $account_id): ?>
+        <div class="brow nav-cell">
+            <a class="notalink" href="../blogdaily/trainer_menu.php"><button class="nobutton">🐴</button></a>
+        </div> <?php endif; ?>
     </div>
 </div>
 <div id="mainbuffer"></div>

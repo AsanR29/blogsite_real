@@ -2,9 +2,12 @@
 require_once('databaseEntity_class.php');
 
 Class UserFile extends DatabaseEntity{
-    public $file_id, $file_use, $account_id, $blog_id, $file_name, $mime_type, $file_url;
-    static public $file_uses = array("pfp", "banner", "blog_pic", "blog_vid");
+    public $file_id, $file_use, $account_id, $roster_id, $file_name, $mime_type, $file_url;
+    static public $file_uses = array("pfp", "banner", "blog_pic", "blog_vid", "horse_icon");
+    static public $account_only = array("pfp","banner");
     static public $blog_only = array("blog_pic", "blog_vid");
+    static public $horse_only = array("horse_icon");
+    static public $singular_uses = array("pfp", "banner", "horse_icon");
 
     function __construct($params){
         parent::__construct("User_files");
@@ -20,10 +23,10 @@ Class UserFile extends DatabaseEntity{
             $file_end = ".mp4";
         }
 
-        if($this->file_url){
+        if(true || $this->file_url){
             return "../userfiles/" . $this->file_url . $file_end;
         }
-        else if(!in_array($this->file_use, UserFile::$blog_only)){
+        else{
             if($this->file_use == "pfp"){
                 return "../css/defaultpfp.png";
             }
@@ -43,8 +46,8 @@ Class UserFile extends DatabaseEntity{
         if(isset($params['account_id'])){
             $this->account_id = $params['account_id'];
         }
-        if(isset($params['blog_id'])){
-            $this->blog_id = $params['blog_id'];
+        if(isset($params['roster_id'])){
+            $this->roster_id = $params['roster_id'];
         }
         if(isset($params['file_name'])){
             $this->file_name = $params['file_name'];
@@ -59,12 +62,12 @@ Class UserFile extends DatabaseEntity{
 
     static function loadFiles($params){
         $file_array = array();
-        if(isset($params['blog_id'])){
+        if(isset($params['roster_id'])){
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM User_files WHERE blog_id=:blog_id';
+            $sql = 'SELECT * FROM User_files WHERE roster_id=:roster_id';
 
             $stmt = $db->prepare($sql);
-            $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
+            $stmt->bindParam(':roster_id', $params['roster_id'], SQLITE3_INTEGER);
             $result = $stmt->execute();
             while($row = $result->fetchArray()){
                 $file_array[] = new UserFile($row);
@@ -76,12 +79,30 @@ Class UserFile extends DatabaseEntity{
 
     function loadFile(){
         $result = false;
-        if($this->account_id && $this->file_use){
+        if($this->account_id && $this->file_use){   // this could use the roster_id instead TBH
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT * FROM User_files WHERE account_id=:account_id AND file_use=:file_use';
+            $sql = 'SELECT User_files.* FROM User_files INNER JOIN Accounts ON Accounts.roster_id=User_files.roster_id WHERE Accounts.account_id=:account_id AND User_files.file_use=:file_use';
             
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
+            $stmt->bindParam(':file_use', $this->file_use, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            if($result){
+                $row = $result->fetchArray();
+                $this->unpack($row);
+            }
+            $db->close();
+        }
+        elseif($this->roster_id && in_array($this->file_use, UserFile::$singular_uses)){
+            $db = new SQLite3('../data/database.db');
+            $sql = "";
+            if(in_array($this->file_use, UserFile::$horse_only)){
+                $sql = 'SELECT User_files.* FROM User_files INNER JOIN Horses ON Horses.roster_id=User_files.roster_id WHERE User_files.roster_id=:roster_id AND User_files.file_use=:file_use';
+            } elseif(in_array($this->file_use, UserFile::$account_only)){
+                $sql = 'SELECT User_files.* FROM User_files INNER JOIN Horses ON Accounts.roster_id=User_files.roster_id WHERE Accounts.roster_id=:roster_id AND User_files.file_use=:file_use';
+            }
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':roster_id', $this->roster_id, SQLITE3_INTEGER);
             $stmt->bindParam(':file_use', $this->file_use, SQLITE3_TEXT);
             $result = $stmt->execute();
             if($result){
@@ -94,6 +115,7 @@ Class UserFile extends DatabaseEntity{
     }
 
     static function createFiles($params, $file_array){
+        if(!isset($params['roster_id'])){ return false; }
         $result_array = array();
         $i = 0;
         foreach($file_array['tmp_name'] as $tmp_name){
@@ -123,6 +145,7 @@ Class UserFile extends DatabaseEntity{
     }
 
     function createFile(){
+        if(!$this->roster_id){ return false; }
         $result = false;
         if($this->file_use == "blog_item"){
             if($this->mime_type == "image/jpeg"){
@@ -137,12 +160,12 @@ Class UserFile extends DatabaseEntity{
         }
         if($this->file_use && in_array($this->file_use, UserFile::$file_uses) && $this->account_id && $this->mime_type){
             $db = new SQLite3('../data/database.db');
-            $sql = 'INSERT INTO User_files(file_use, account_id, blog_id, file_name, mime_type) VALUES(:file_use, :account_id, :blog_id, :file_name, :mime_type)';
+            $sql = 'INSERT INTO User_files(file_use, account_id, roster_id, file_name, mime_type) VALUES(:file_use, :account_id, :roster_id, :file_name, :mime_type)';
 
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':file_use', $this->file_use, SQLITE3_TEXT);
             $stmt->bindParam(':account_id', $this->account_id, SQLITE3_INTEGER);
-            $stmt->bindParam(':blog_id', $this->blog_id, SQLITE3_INTEGER);
+            $stmt->bindParam(':roster_id', $this->roster_id, SQLITE3_INTEGER);
             $stmt->bindParam(':file_name', $this->file_name, SQLITE3_TEXT);
             $stmt->bindParam(':mime_type', $this->mime_type, SQLITE3_TEXT);
             
@@ -168,19 +191,19 @@ Class UserFile extends DatabaseEntity{
 
     static function deleteFiles($params){
         $result = false;
-        if(isset($params['blog_id']) && $params['blog_id']){
+        if(isset($params['roster_id']) && $params['roster_id']){
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT file_url, mime_type FROM User_files WHERE blog_id=:blog_id';
+            $sql = 'SELECT file_url, mime_type FROM User_files WHERE roster_id=:roster_id';
             $stmt = $db->prepare($sql);
-            $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
+            $stmt->bindParam(':roster_id', $params['roster_id'], SQLITE3_INTEGER);
             $result = $stmt->execute();
             $url_array = array();
             while($row = $result->fetchArray()){
                 $url_array[] = $row;
             }
-            $sql = 'DELETE FROM User_files WHERE blog_id=:blog_id';
+            $sql = 'DELETE FROM User_files WHERE roster_id=:roster_id';
             $stmt = $db->prepare($sql);
-            $stmt->bindParam(':blog_id', $params['blog_id'], SQLITE3_INTEGER);
+            $stmt->bindParam(':roster_id', $params['roster_id'], SQLITE3_INTEGER);
             $result = $stmt->execute();
             $db->close();
             for($i = 0; $i < count($url_array); $i++){
@@ -197,7 +220,7 @@ Class UserFile extends DatabaseEntity{
         }
         else if(isset($params['account_id']) && $params['account_id']){
             $db = new SQLite3('../data/database.db');
-            $sql = 'SELECT file_url, mime_type FROM User_files WHERE account_id=:account_id AND blog_id=null';
+            $sql = 'SELECT file_url, mime_type FROM User_files WHERE account_id=:account_id';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':account_id', $params['account_id'], SQLITE3_INTEGER);
             $result = $stmt->execute();
@@ -205,7 +228,7 @@ Class UserFile extends DatabaseEntity{
             while($row = $result->fetchArray()){
                 $url_array[] = $row;
             }
-            $sql = 'DELETE FROM User_files WHERE account_id=:account_id AND blog_id=null';
+            $sql = 'DELETE FROM User_files WHERE account_id=:account_id';
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':account_id', $params['account_id'], SQLITE3_INTEGER);
             $result = $stmt->execute();

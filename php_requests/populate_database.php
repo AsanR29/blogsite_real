@@ -24,11 +24,11 @@
 <?php
 //found this code at https://www.php.net/manual/en/language.exceptions.php
 //functions have to throw exceptions for catch to work, but many dont by default
-function exceptions_error_handler($severity, $message, $filename, $lineno) {
-    throw new ErrorException($message, 0, $severity, $filename, $lineno);
-}
+//function exceptions_error_handler($severity, $message, $filename, $lineno) {
+//    throw new ErrorException($message, 0, $severity, $filename, $lineno);
+//}
 
-set_error_handler('exceptions_error_handler');
+//set_error_handler('exceptions_error_handler');
 //
 
 
@@ -54,25 +54,27 @@ echo rand(0,999);
 print_r($_POST);
 if(isset($_POST['populate'])){
     if(isset($_POST['tables']) && $_POST['tables']){
-        try {
-            $tables_file = fopen("../create_tables.sql", "r");
-            $create_tables = fread($tables_file,filesize("../create_tables.sql"));
-            //echo $create_tables;
-            $sql = explode(";", $create_tables);
-            fclose($tables_file);
 
-            //------Create tables-----------
-            for($i = 0; $i < count($sql)-1; $i++){
-                $db = new SQLite3('../data/database.db');
-                $stmt = $db->prepare($sql[$i]);
+        $tables_file = fopen("../create_tables.sql", "r");
+        $create_tables = fread($tables_file,filesize("../create_tables.sql"));
+        //echo $create_tables;
+        $sql = explode(";", $create_tables);
+        fclose($tables_file);
+
+        //------Create tables-----------
+        echo count($sql); echo "<br>";
+        $db = new SQLite3('../data/database.db');
+        for($i = 0; $i < count($sql)-1; $i++){
+            $stmt = $db->prepare($sql[$i]);
+            if($stmt){
                 $result = $stmt->execute();
                 if($result){
                     echo "<br> Successfully executed!";
-                }
-            }
-        } catch(Exception $e){
-            echo "Database already exists.<br>";
+                }}
+            else{ $result = false; }
+
         }
+
     }
 
     if(isset($_POST['accounts']) && $_POST['accounts']){

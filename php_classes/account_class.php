@@ -2,7 +2,7 @@
 require_once('databaseEntity_class.php');
 
 Class Account extends DatabaseEntity{
-    public $account_id, $username, $password, $email, $account_type, $email_code, $bio;
+    public $account_id, $roster_id, $username, $password, $email, $account_type, $email_code, $bio;
 
     function __construct($params){
         parent::__construct("Accounts");
@@ -12,6 +12,9 @@ Class Account extends DatabaseEntity{
     function unpack($params){
         if(isset($params['account_id'])){
             $this->account_id = $params['account_id'];
+        }
+        if(isset($params['roster_id'])){
+            $this->roster_id = $params['roster_id'];
         }
         if(isset($params['username'])){
             $this->username = $params['username'];
@@ -97,9 +100,17 @@ Class Account extends DatabaseEntity{
             $db = new SQLite3('../data/database.db');
             $result = $this->checkUnique($db);
             if($result == 0){
-                $sql = 'INSERT INTO Accounts(username, password, email, account_type, email_code) VALUES(:username, :password, :email, :account_type, :email_code)';
+                // make a FileRoster
+                $sql = 'INSERT INTO FileRoster DEFAULT VALUES';
+                $result = $db->query($sql);
+                if($result){
+                    $this->roster_id = $db->lastInsertRowID();
+                }
+                // Make the account
+                $sql = 'INSERT INTO Accounts(username, roster_id, password, email, account_type, email_code) VALUES(:username, :roster_id, :password, :email, :account_type, :email_code)';
                 $stmt = $db->prepare($sql);
                 $stmt->bindParam(':username', $this->username, SQLITE3_TEXT);
+                $stmt->bindParam(':roster_id', $this->roster_id, SQLITE3_INTEGER);
                 $stmt->bindParam('password', $password, SQLITE3_TEXT);
                 $stmt->bindParam(':email', $email, SQLITE3_TEXT);
                 $stmt->bindParam(':account_type', $account_type, SQLITE3_INTEGER);
@@ -108,6 +119,7 @@ Class Account extends DatabaseEntity{
                 if($result){
                     $this->account_id = $db->lastInsertRowID();
                 }
+
             }
             else{
                 $result = false;
@@ -246,6 +258,73 @@ Class Account extends DatabaseEntity{
                 $params = array('account_id'=>$this->account_id);
                 $result = UserFile::deleteFiles($params);
             }
+        }
+        return $result;
+    }
+}
+
+Class Trainer {
+    public $trainer_id, $account_id, $trainer_name;
+
+    function __construct($params){
+        $this->unpack($params);
+    }
+
+    function unpack($params){
+        if(isset($params['trainer_id'])){
+            $this->trainer_id = $params['trainer_id'];
+        }
+        if(isset($params['account_id'])){
+            $this->account_id = $params['account_id'];
+        }
+        if(isset($params['trainer_name'])){
+            $this->trainer_name = $params['trainer_name'];
+        }
+        return;
+    }
+
+    function loadTrainer() {
+        $sql = 'SELECT * FROM TrainersTable WHERE trainer_id=:primary_key';
+        $db = new SQLite3('../data/database.db');
+        $stmt = $db->prepare($sql_statement);
+        $stmt->bindParam(':primary_key', $key, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        if($result){
+            $row = $result->fetchArray();
+        }
+        $db->close();
+        $this->unpack($row);
+        return $result;
+    }
+    static function loadTrainers($params) {
+        $trainer_array = [];
+        if(isset($params['account_id'])){
+            $db = new SQLite3('../data/database.db');
+            $sql = 'SELECT * FROM TrainersTable WHERE account_id=:primary_key';
+
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':primary_key', $params['account_id'], SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            while($row = $result->fetchArray()){
+                $trainer_array[] = new Trainer($row);
+            }
+            $db->close();
+        }
+        return $trainer_array;
+    }
+    function createTrainer() {
+        $result = false;
+        //
+        if($this->account_id && $this->trainer_name) {
+            $db = new SQLite3('../data/database.db');
+            $sql = 'INSERT INTO TrainersTable(account_id, trainer_name) VALUES(:account_id,:trainer_name)';
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':account_id',$this->account_id, SQLITE3_INTEGER);
+            $stmt->bindValue(':trainer_name',$this->trainer_name, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            if($result){
+                $this->trainer_id = $db->lastInsertRowID();
+            } $db->close();
         }
         return $result;
     }

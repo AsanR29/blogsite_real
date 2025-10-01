@@ -2,7 +2,7 @@
 require_once('databaseEntity_class.php');
 
 Class BlogPost extends DatabaseEntity{
-    public $blog_id, $account_id, $blog_datetime, $visibility, $title, $contents, $blog_url;
+    public $blog_id, $account_id, $roster_id, $blog_datetime, $visibility, $title, $contents, $blog_url;
     public $blog_files = array();
 
     function __construct($params){
@@ -13,6 +13,9 @@ Class BlogPost extends DatabaseEntity{
     function unpack($params){
         if(isset($params['blog_id'])){
             $this->blog_id = $params['blog_id'];
+        }
+        if(isset($params['roster_id'])){
+            $this->roster_id = $params['roster_id'];
         }
         if(isset($params['account_id'])){
             $this->account_id = $params['account_id'];
@@ -188,10 +191,18 @@ Class BlogPost extends DatabaseEntity{
                 $this->blog_id = $db->lastInsertRowID();
                 $blog_url = base64_encode($this->encryptUnique($this->blog_id));
 
-                $sql = 'UPDATE Blog_posts SET blog_url=:blog_url WHERE blog_id=:blog_id';
+                // make a FileRoster
+                $sql = 'INSERT INTO FileRoster DEFAULT VALUES';
+                $result = $db->query($sql);
+                if($result){
+                    $this->roster_id = $db->lastInsertRowID();
+                }
+
+                $sql = 'UPDATE Blog_posts SET blog_url=:blog_url,roster_id=:roster_id WHERE blog_id=:blog_id';
                 $stmt = $db->prepare($sql);
                 $stmt->bindParam(':blog_url', $blog_url, SQLITE3_TEXT);
                 $stmt->bindParam(':blog_id', $this->blog_id, SQLITE3_INTEGER);
+                $stmt->bindParam(':roster_id', $this->roster_id, SQLITE3_INTEGER);
                 $result = $stmt->execute();
                 $this->blog_url = $blog_url;
             }
@@ -239,7 +250,7 @@ Class BlogPost extends DatabaseEntity{
             $db->close();
             if($result){
                 require_once('file_class.php');
-                $params = array('blog_id'=>$this->blog_id);
+                $params = array('blog_id'=>$this->blog_id,'roster_id'=>$this->roster_id);
                 $result_1 = UserFile::deleteFiles($params);
                 require_once('blog_tag_class.php');
                 $result_2 = BlogTag::deleteBlogTags($params);

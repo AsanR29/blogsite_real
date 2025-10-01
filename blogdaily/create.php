@@ -1,6 +1,6 @@
 <?php $pagetitle = "New Blog Post"; ?>
 <?php require_once('../loaders/header.php'); ?>
-<body onload='pageObj = new CurrentPage([], ""); updateCssSize();'>
+<body onload='pageObj = new CurrentPage([0], ""); updateCssSize();'>
 <script type="text/javascript" src="../javascript_imports/textarea.js"></script>
 <?php require_once('../loaders/nav_left.php'); ?>
 <?php require_once('../loaders/main_top.php'); ?>

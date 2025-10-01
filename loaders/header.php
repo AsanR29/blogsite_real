@@ -2,6 +2,7 @@
 <html>
 <head>
     <link href="../css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../css/horse_style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../javascript_imports/forms.js"></script>
 </head>
 <div id="super">
