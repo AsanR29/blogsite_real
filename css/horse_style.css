@@ -1,0 +1,118 @@
+.race_record_grid{
+    background-color: pink;
+    border-width:0px;
+    width:auto;
+
+    display:grid;
+    grid-template-columns: 
+        [race_name] minmax(min-content, 1fr)
+        [race_grade] 90px
+        [race_distance] 90px
+        [racecourse] 90px
+        [race_track_type] 60px
+        [race_direction] 60px
+        [record_button] min-content;
+    gap:4px;
+    padding:4px;
+    margin-bottom:10px;
+    overflow:clip;
+}
+.skill_record_grid{
+    background-color: pink;
+    border-width:0px;
+    width:auto;
+
+    display:grid;
+    grid-template-columns: 
+        [skill_name] minmax(min-content, 1fr)
+        [skill_type] 140px
+        [skill_level] 140px
+        [record_button] min-content;
+    gap:4px;
+    padding:4px;
+    margin-bottom:10px;
+    overflow:clip;
+}
+.card_record_grid{
+    background-color: pink;
+    border-width:0px;
+    width:auto;
+
+    display:grid;
+    grid-template-columns: 
+        [card_name] minmax(min-content, 1fr)
+        [trainee_enum] 140px
+        [stat] 90px
+        [rarity] 90px
+        [record_button] min-content;
+    gap:4px;
+    padding:4px;
+    margin-bottom:10px;
+    overflow:clip;
+}
+.horse_stat_sparks_grid{
+    display:grid;
+    grid-template-columns:
+        90px 90px;
+    gap:4px;
+    padding:4px;
+}
+.horse_career_stats_grid{
+    display:grid;
+    grid-template-columns: 
+        90px 90px 140px 140px 140px 140px;
+    gap:4px;
+    padding:4px;
+}
+.horse_stat_stats_grid{
+    display:grid;
+    grid-template-columns: 
+        90px 90px 90px 90px 90px;
+    gap:4px;
+    padding:4px;
+}
+.horse_aptitude_stats_grid{
+    display:grid;
+    grid-template-columns: 
+        60px 60px 60px 60px 60px 60px 60px 60px 60px 60px;
+    gap:4px;
+    padding:4px;
+}
+.horse_record_input{
+    color:#000000;
+    border-width: 0px;
+    background-color: rgba(255, 255, 255, 0.188);
+    padding:4;
+}
+.horse_create_input{
+    color:#000000;
+    border-width: 0px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding:4;
+}
+
+.vertical_buttons{
+    display:grid;
+    width:fit-content;
+    height:min-content;
+    gap:10px;
+}
+.squares_menu{
+    display: flex;
+    margin-top: 5px;
+    margin-left: 5px;
+    flex-wrap: wrap;
+}
+.menu_gaps{
+    display:inline-block;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.horse_icon_box{
+    background-color:white;
+    min-width:50px;
+    min-height:50px;
+    width:min-content;
+    height:min-content;
+}

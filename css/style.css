@@ -639,6 +639,8 @@ form{
 }
 
 #createtags{
+    display:flex;
     width: 50%;
     height: var(--line-5);
+    gap:5px;
 }

@@ -3,7 +3,7 @@ require_once('../php_classes/account_class.php');
 session_start();
 $form = json_decode(file_get_contents('php://input'), true);
 
-if(false && ($form['account_type'] && !(isset($_SESSION['account_type']) && $_SESSION['account_type'] == 3))){
+if(($form['account_type'] && !(isset($_SESSION['account_type']) && $_SESSION['account_type'] == 3))){
     echo json_encode(['request_outcome'=>false]);
 }
 else{

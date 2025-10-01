@@ -2,21 +2,29 @@ var pageObj;
 var selectedComment = false;
 blogtagid_total = 1;
 pres_total = 1;
+input_ids = 1;
 
-function getFormElements(type){
+function getFormElements(type,node){
     var elements = [];
     if(type == "form"){
-        elements = document.querySelectorAll(".form_input");
+        elements = node.querySelectorAll(".form_input");
     }
     else if(type == "blogreport"){
-        elements = document.querySelectorAll(".blog_report_input");
+        elements = node.querySelectorAll(".blog_report_input");
     }
     else if(type == "commentreport"){
-        elements = document.querySelectorAll(".comment_report_input");
+        elements = node.querySelectorAll(".comment_report_input");
     }
     var post_vars = {};
     for(let i = 0; i < elements.length; i++){
-        post_vars[elements[i].getAttribute("name")] = elements[i].value;
+        let key = elements[i].getAttribute("name");
+        if(key in post_vars){
+            if(!Array.isArray(post_vars[key])){
+                post_vars[key] = [post_vars[key]]; }
+            post_vars[key].push(elements[i].value);
+        }
+        else{
+            post_vars[key] = elements[i].value; }
     }
     return post_vars;
 }
@@ -32,11 +40,21 @@ function makeRequest(){
     return Request;
 }
 
-function sendForm(){
+function sendForm(form_id=false){
     var filename = pageObj.destination;
-    var post_vars = getFormElements("form");
+    var node = document;
+    if(form_id){
+        node = document.getElementById(form_id);
+    }
+    var post_vars = getFormElements("form",node);
+
     if(pageObj.destination == "../php_requests/create_comment.php"){
         post_vars["blog_url"] = pageObj.header_vars[0];
+    }
+    if(form_id=="horse_search_area"){
+        filename = pageObj.loadable.filename;
+        requestPhp(filename,post_vars,pageObj.loadable.element_id);
+        return;
     }
     var post_vars = JSON.stringify(post_vars);
     //console.log(post_vars);
@@ -46,6 +64,7 @@ function sendForm(){
     Request.setRequestHeader('Content-Type', 'application/json');
     Request.onreadystatechange = function(){
         if(Request.readyState == 4 && Request.status == 200){
+            console.log(Request.response);
             if(Request.response['request_outcome'] == false){
                 if(Request.response['class']['account_id'] != null && !Request.response['class']['account_id']){
                     loadPopup("popuplogin");
@@ -107,11 +126,68 @@ function fillErrors(response){
     }
 }
 
+function skipInput(e, key_press_id, i, direction) {
+    if(key_press_id == pageObj.key_press_id && pageObj.userInput[0] == true && pageObj.userInput[1] == e.key) {
+        // potentially unchanged
+        let inputDiv = pageObj.inputAreas[i].parentNode;
+        let nextDiv;
+        if(direction == 1){
+            nextDiv = inputDiv.nextElementSibling;
+        } else{ nextDiv = inputDiv.previousElementSibling; }
+
+        let inputs_nodelist = nextDiv.querySelectorAll(".form_input");
+        let next_input_id = inputs_nodelist[0].id;
+        i = next_input_id;
+
+        if(i > pageObj.inputAreas.length){ return; }
+        pageObj.inputAreas[i-direction].focus();
+        setTimeout(skipInput, 300, e, key_press_id, i, direction);
+    }
+}
+function findInputCallback(n){
+    return n.id == this.id;
+}
 class CurrentPage {
     constructor(header_vars, destination){
         this.header_vars = header_vars;
         this.destination = destination;
         this.loadable = false;
+
+        this.userInput = [false,false];
+        this.key_press_id = 1;
+        this.updateInputAreas();
+        this.senseKeyPresses();
+    }
+    updateInputAreas() { 
+        this.inputAreas = Array.from(document.querySelectorAll(".form_input")); 
+        let select_elements = document.getElementsByTagName("select");
+        for(let i = 0; i < select_elements.length; i++){
+            select_elements[i].addEventListener("keydown", function(e){
+                if(e.key == "ArrowLeft" || e.key == "ArrowRight"){
+                    e.preventDefault();
+                }
+            });
+        }
+    }
+    senseKeyPresses() {
+        document.querySelector("html").onkeydown = function(e){
+            if(pageObj.userInput[0] == true && pageObj.userInput[1] == e.key){ return; }
+            pageObj.userInput = [true,e.key]; ++pageObj.key_press_id;
+
+            let current_input = document.activeElement;
+            if(e.key == "ArrowLeft" || e.key == "ArrowRight") {
+                let i = pageObj.inputAreas.findIndex(findInputCallback, current_input); //this is set to current_input in the callback
+                let direction;
+                if(e.key == "ArrowLeft"){ i -= 1; direction = -1; } else{ i += 1; direction = 1; }  //ArrowRight = +1
+                pageObj.inputAreas[i].focus();
+                setTimeout(skipInput, 500, e, pageObj.key_press_id, i, direction);
+            }
+        };
+        document.querySelector("html").onkeyup = function(e){
+            if(pageObj.userInput[0] == true && e.key == pageObj.userInput[1]) {
+                pageObj.userInput = [false,false];
+            }
+        };
     }
 }
 
@@ -144,6 +220,9 @@ function createLoadable(filename, element_id, post_id, page, dict){
             newLoadable.post_vars["title"] = dict["title"];
             newLoadable.post_vars["blog_tag"] = dict["blog_tag"];
         }
+    }
+    else if (filename == "../loaders/load_trainers.php"){
+        newLoadable.post_vars["username"] = post_id;
     }
     newLoadable.post_vars["page"] = page;
     requestPhp(filename, newLoadable.post_vars, element_id);
@@ -306,8 +385,7 @@ function addNewBlogTag(location){
         id = blogtagid_total;
         blogtagid_total += 1;
     }
-
-    div.insertAdjacentHTML('beforeend','<div id="blogtagvis_' + id + '" class="blogtagdiv"><span name="blogtag_' + id + '" class="blog_tag">' + text + '</span><button onclick="removeNewBlogtag(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+    div.insertAdjacentHTML('beforeend','<div id="blogtagvis_' + id + '" class="blogtagdiv"><span name="blogtag_' + id + '" class="blog_tag">' + text + '</span><button type="button" onclick="removeNewBlogtag(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
     div.insertAdjacentHTML('afterend','<div hidden id="blogtagnew_' + id + '"><input name="blog_tag[]" hidden value="' + text + '"></input></div>');
     return;
 }
@@ -338,4 +416,58 @@ function deleteComment(){
 function popupimage(url){
     document.documentElement.style.setProperty('--popupimage', "100%");
     document.getElementById("zoomimage").src = url;
+}
+
+//umamusume
+function addNewHorseRecord(location,type){
+    div = document.getElementById(location);
+    var id = 0;
+    try{
+        if(pageObj.header_vars[0] != -1){
+            blogtagid_total = parseInt(pageObj.header_vars[0]);
+            pageObj.header_vars[0] = -1;
+            id = blogtagid_total;
+            blogtagid_total += 1;
+        }
+        else{
+            id = blogtagid_total;
+            blogtagid_total += 1;
+        }
+        if(pageObj.header_vars[1]){
+            pageObj["trainee_dict"] = pageObj.header_vars[1];   // new attribute?
+        }
+    }
+    catch{
+        id = blogtagid_total;
+        blogtagid_total += 1;
+    }
+    switch(type){
+        case "race":
+            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="race_record_grid"><input id='+input_ids+' name="race_name[]" type="text" class="horse_record_input form_input" placeholder="race name"></input><select id='+(input_ids+1)+' name="race_grade[]" class="horse_record_input form_input"><option value="0">DEBUT</option><option value="1">MAIDEN</option><option value="2">OP</option><option value="3">G3</option><option value="4">G2</option><option selected value="5">G1</option><option value="6">EX</option></select><input id='+(input_ids+2)+' name="race_distance[]" type="number" class="horse_record_input form_input" placeholder="1600"></input><select id='+(input_ids+3)+' name="racecourse[]" class="horse_record_input form_input"><option value="0">Sapporo</option><option value="1">Hakodate</option><option value="2">Fukushima</option><option value="3">Niigata</option><option value="4">Tokyo</option><option value="5">Nakayama</option><option value="6">Chukyo</option><option value="7">Kyoto</option><option value="8">Hanshin</option><option value="9">Kokura</option><option value="10">Oi</option></select><select id='+(input_ids+4)+' name="race_track_type[]" class="horse_record_input form_input"><option selected value="0">Turf</option><option value="0">Dirt</option></select><select id='+(input_ids+5)+' name="race_direction[]" class="horse_record_input form_input"><option selected value="0">Left</option><option value="0">Right</option></select><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+            input_ids += 6;
+            break;
+        case "skill":
+            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="skill_record_grid"><input id='+(input_ids)+' name="skill_name[]" type="text" class="horse_record_input form_input" placeholder="skill name"></input><select id='+(input_ids+1)+' name="skill_type[]" class="horse_record_input form_input"><option value="0">passive normal</option><option value="1">passive negative</option><option value="2">stamina normal</option><option value="3">stamina rare</option><option selected value="4">speed normal</option><option value="5">speed rare</option><option value="6">speed negative</option><option value="7">debuff normal</option><option value="8">debuff rare</option><option value="9">speed unique</option><option value="10">stamina unique</option><option value="11">speed inherited</option><option value="12">stamina inherited</option></select><input id='+(input_ids+2)+' name="skill_level[]" type="number" class="horse_record_input form_input" placeholder="1"></input><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+            input_ids += 3;
+            break;
+        case "card":
+            let text = '<div id="horse_record_' + id + '" class="card_record_grid"><input id='+(input_ids)+' name="card_name[]" type="text" class="horse_record_input form_input" placeholder="happiest day"></input><select id='+(input_ids+1)+' name="trainee_enum[]" class="horse_record_input form_input">';
+            let trainee_keys = Object.keys(pageObj.trainee_dict);
+            let selected = true;
+            for(let key of trainee_keys){
+                text+= '<option' + (selected ? ' selected ' : ' ') + 'value="' + key + '">' + pageObj.trainee_dict[key] + '</option>';
+                selected = false;
+            }
+            text += '</select><select id='+(input_ids+2)+' name="stat[]"class="horse_record_input form_input"><option value="0">speed</option><option value="1">stamina</option><option value="2">power</option><option selected value="3">guts</option><option value="4">wit</option></select><select id='+(input_ids+3)+' name="rarity[]" class="horse_record_input form_input"><option value="0">R</option><option value="1">SR</option><option value="2">SSR</option></select><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>';
+            div.insertAdjacentHTML('beforeend',text);
+            input_ids += 4;
+            break;
+    }
+    pageObj.updateInputAreas();
+    return;
+}
+
+function removeRaceRecord(id){
+    div = document.getElementById("horse_record_"+id);
+    div.outerHTML = ""; return;
 }
