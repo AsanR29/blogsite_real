@@ -1,4 +1,3 @@
-<?php $pagetitle = "Veteran Horse"; ?>
 <?php require_once('../loaders/header.php'); ?>
 <?php require_once('../php_requests/load_horse_records.php');  ?>
 <?php
@@ -10,33 +9,28 @@ $horse = new Horse($_GET);
 $result = $horse->loadHorse();
 $result = $horse->loadStats();
 ?>
-<body onload='pageObj = new CurrentPage([0], ""); updateCssSize();'>
+<body onload='pageObj = new CurrentPage([0], "../php_requests/create_career_records.php"); updateCssSize();'>
 <script type="text/javascript" src="../javascript_imports/textarea.js"></script>
-<?php require_once('../loaders/nav_left.php'); ?>
-<?php require_once('../loaders/main_top.php'); ?>
+
+<?php 
+$horse_enum = GetHorseEnum($horse->horse_type);
+$pagetitle = GetName($horse_enum)[0]; ?>
+<?php require_once('../loaders/horse_top.php'); ?>
 
 <article>
     
-<form method="post" action="../php_requests/create_horse.php" enctype="multipart/form-data">
-    <output class="titlesize createblogoutput form_output" name="trainee_enum"> 
-        <?php 
-        $horse_enum = GetHorseEnum($horse->horse_type);
-        echo GetName($horse_enum)[0]; ?>
-    </output>
-    <div id="mainbuffer"></div>
+<form method="post" action="../php_requests/create_horse.php" enctype="multipart/form-data">    <!-- Change to update_horse.php ?-->
     <div class="horse_stat_sparks_grid">
         <label>stat spark</label><label>apt spark</label>
         <output class="horse_record_output form_output">
-            <?php $stat_names = ["Speed","Stamina","Power","Guts","Wit"];
-            $stat_spark = floor($horse->stat_spark / 3);
-            $stat_magnitude = $horse->stat_spark % 3;
-            echo $stat_names[$stat_spark] . " " . $stat_magnitude; ?>
+            <?php 
+            echo OutputSpark(1,$horse->stat_spark);
+            ?>
         </output>
         <output class="horse_record_output form_output">
-            <?php $apt_names = ["Turf","Dirt","Sprint","Mile","Medium","Long","Front","Pace","Late","End"]; 
-            $apt_spark = floor($horse->apt_spark / 3);
-            $apt_magnitude = $horse->apt_spark % 3;
-            echo $apt_names[$apt_spark] . " " . $apt_magnitude; ?>
+            <?php 
+            echo OutputSpark(2, $horse->apt_spark); 
+            ?>
         </output>
     </div>
     <div class="horse_career_stats_grid">
@@ -75,12 +69,67 @@ $result = $horse->loadStats();
 
     </div>
 
-    <button class="gen_button floatright">Create blog post</button>
+    <button class="gen_button floatright">Update Details</button>
 </form>
-<div id="imagepreviews"></div>
-<button id="addBlogtagnew" hidden onclick="addNewBlogTag('invisible_blogtags')"></button>
+
+<form>
+    <div id="mainbuffer-2">
+        <!-- invisible. used by datarecords -->
+        <?php require_once("../loaders/veteran_details/datalists.php"); ?>
+        <!-- end of datalists -->
+    </div>
+
+
+    <script> tab_ids = ["tab_1","tab_2","tab_3","tab_4"]; </script>
+    <?php 
+        $tab_ids = ["tab_1","tab_2","tab_3","tab_4"];
+        $tab_names = ["Skills", "Sparks", "Support Cards", "Races Ran"];
+        require_once("../loaders/veteran_tabs.php"); 
+        
+    ?>
+    <div id="horse_records">
+        <input hidden class="form_input" name="horse_id" value="<?php echo $horse->horse_id; ?>"></input>
+        <div id="tab_1" style="border-style: solid; border-width: 2px; border-color: blue;">
+            <button type="button" id="blogtag_create" class="gen_button" onclick="addNewHorseRecord('horse_skill_records','skillowned')">Add Skill</button>
+            <div id="horse_skill_records">
+
+            </div>
+            <?php require_once("../loaders/veteran_details/skills.php"); ?>
+        </div>
+        <div id="tab_2" style="border-style: solid; border-width: 2px; border-color: red; display: none;">
+            <div id="createtags" class="inputrow">
+                <button type="button" id="blogtag_create" class="gen_button" onclick="addNewHorseRecord('horse_spark_records','racespark')">Add Race Spark</button>
+                <button type="button" id="blogtag_create" class="gen_button" onclick="addNewHorseRecord('horse_spark_records','skillspark')">Add Skill Spark</button>
+            </div>
+            <div id="horse_spark_records">
+
+            </div>
+            <?php require_once("../loaders/veteran_details/sparks.php"); ?>
+        </div>
+        <div id="tab_3" style="border-style: solid; border-width: 2px; border-color: green; display: none;">
+            <button type="button" id="blogtag_create" class="gen_button" onclick="addNewHorseRecord('horse_card_records','cardused')">Add Support Card</button>
+            <div id="horse_card_records">
+
+            </div>
+            <?php require_once("../loaders/veteran_details/cards.php"); ?>
+        </div>
+        <div id="tab_4" style="border-style: solid; border-width: 2px; border-color: orange; display: none;">
+            <button type="button" id="blogtag_create" class="gen_button" onclick="addNewHorseRecord('horse_race_records','raceran')">Add Career Race</button>
+            <div id="horse_race_records">
+
+            </div>
+            <?php require_once("../loaders/veteran_details/races.php"); ?>
+        </div>
+
+        <div id="mainbuffer"></div>
+        <div class="vertical_buttons floatright">
+            <button type="button" class="gen_button floatright" onclick="sendForm('horse_records')">Submit Records</button>
+        </div>
+    </div>
+</form>
 </article>
 
 <?php require_once('../loaders/main_bottom.php'); ?>
+
 </body>
 </html>

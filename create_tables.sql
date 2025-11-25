@@ -202,7 +202,7 @@ CREATE TABLE "CardsUsed" (
     "card_used_id" INTEGER,
     "support_card_id" INTEGER,
     "horse_id" INTEGER,
-    "level" INTEGER,
+    "card_level" INTEGER,
     PRIMARY KEY("card_used_id" AUTOINCREMENT),
     FOREIGN KEY("support_card_id") REFERENCES "SupportCardsTable"("support_card_id"),
     FOREIGN KEY("horse_id") REFERENCES "Horses"("horse_id")
@@ -213,7 +213,7 @@ CREATE TABLE "RacesRan" (
     "race_id" INTEGER,
     "horse_id" INTEGER,
     "weather" INTEGER,
-    "track_condition" INTEGER,
+    "track_conditions" INTEGER,
     "placement" INTEGER,
     "strategy" INTEGER,
     PRIMARY KEY("race_ran_id" AUTOINCREMENT),

@@ -20,7 +20,9 @@ if(isset($_GET['trainer_id'])){
 <article>
 
 <form>
-    <div id="mainbuffer"></div>
+    <div id="mainbuffer">
+        <?php require_once("../loaders/veteran_details/datalists.php"); ?>
+    </div>
     <label>Races: </label>
     <div id="createtags" class="inputrow">
         <button type="button" id="blogtag_create" class="gen_button" onclick="addNewHorseRecord('horse_records','race')">Add Race</button>

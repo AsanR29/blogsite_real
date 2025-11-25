@@ -3,13 +3,14 @@
 <?php require_once('../php_requests/load_horse_records.php');  ?>
 <body onload='pageObj = new CurrentPage([0], ""); updateCssSize();'>
 <script type="text/javascript" src="../javascript_imports/textarea.js"></script>
-<?php require_once('../loaders/nav_left.php'); ?>
-<?php require_once('../loaders/main_top.php'); ?>
+
+<?php require_once('../loaders/horse_top.php'); ?>
 
 <article>
     
 <form method="post" action="../php_requests/create_horse.php" enctype="multipart/form-data">
-    <select required type="text" class="titlesize createbloginput form_input" name="trainee_enum">
+    <input required type="text" class="titlesize createbloginput form_input" name="trainee_enum" list="trainee_options"></input>
+    <datalist id="trainee_options">
         <?php
             $enums_array = HorseType::cases();
             $names_array = array_column(HorseType::cases(),'value');
@@ -17,12 +18,12 @@
             foreach($enums_array as $pos => $enum): ?>
                 <option value="<?php echo $names_array[$pos]; ?>"><?php echo GetName($enum)[0]; ?></option>
             <?php endforeach; ?>
-    </select>
+    </datalist>
     <div id="mainbuffer"></div>
     <div class="horse_stat_sparks_grid">
         <label>stat spark</label><label>apt spark</label>
         <select name="stat_spark" class="horse_create_input form_input">
-            <?php $stat_names = ["Speed","Stamina","Power","Guts","Wit"];
+            <?php $stat_names = ["Speed","Stamina","Power","Guts","Wit","Friend"];
             for($i = 0; $i < 5; $i++):
                 for($j = 0; $j < 3; $j++): ?>
                     <option value="<?php echo (($i*3)+$j); ?>"> <?php echo $stat_names[$i] . " " . ($j+1); ?> </option>
