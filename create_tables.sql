@@ -128,6 +128,7 @@ CREATE TABLE "Horses" (
     "stat_spark" INTEGER,
     "apt_spark" INTEGER,
     "roster_id" INTEGER,
+    "is_guest"	INTEGER DEFAULT 0,
     PRIMARY KEY("horse_id" AUTOINCREMENT),
     FOREIGN KEY("trainer_id") REFERENCES "TrainersTable"("trainer_id"),
     FOREIGN KEY("roster_id") REFERENCES "FileRoster"("roster_id")

@@ -95,6 +95,17 @@ try{
             $results_array[] = $result;
         }
     }
+    if( isset($form["parent_id[]"]) ) {
+        $length = count($form["parent_id[]"]);
+        for($i = 0; $i < $length; $i++) {
+            $params = [
+                "child_id" => $horse->horse_id,
+                "parent_id" => $form["parent_id[]"][$i]
+            ];
+            $result = $horse->createInspiration($params);
+            $results_array[] = $result;
+        }
+    }
 } catch(Exception $e) {
     $error_holder["results_array"] = $results_array;
     $error_holder["exception"] = $e;

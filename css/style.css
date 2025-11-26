@@ -607,6 +607,10 @@ form{
 .blogtagbutton{
     display: inline-block;
 }
+.nostylebutton{
+    padding: 0px;
+    border-width: 0px;
+}
 .blog_tag{
     color:white;
     font-family: "Open Sans", Helvetica, Arial, sans-serif;

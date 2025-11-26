@@ -82,7 +82,19 @@ if(isset($form['horse_search'])){
             <?php endfor; ?>
             <?php if(count($horse_records) == 0): ?>
                 <section>
-                    <div><output class="titlesize" style="color:grey">No Horses found</h2></div>
+                    <div><output class="titlesize" style="color:grey">No Horses found</output></div>
+                </section>
+            <?php endif;
+            break;
+        case 'guest':
+            ?> <section class="squares_menu"> <?php
+            $horse_records = Horse::loadAllGuests($form['horse_search']);
+            for($i = 0; $i < count($horse_records); $i++): ?>
+                <?php require("guest_box.php"); ?>
+            <?php endfor; ?>
+            <?php if(count($horse_records) == 0): ?>
+                <section>
+                    <div><output class="titlesize" style="color:grey">No Guests found</output></div>
                 </section>
             <?php endif;
             break;

@@ -4,7 +4,7 @@ require_once('account_class.php');  //  trainer_class inside here
 require_once('file_class.php');
 
 $h_a = [    // horse attributes
-    "horse_id","trainer_id","roster_id","horse_type","stat_spark","apt_spark","icon_id"
+    "horse_id","trainer_id","roster_id","horse_type","stat_spark","apt_spark","icon_id","is_guest"
 ];
 $h_s_a = [  // horse_stats attributes
     "horse_stats_id","horse_id","rating","fans","epiphet","horse_date","major_wins","career_scenario","speed","stamina","power","guts","wit","turf","dirt","sprint","mile","medium","long","front_runner","pace_chaser","late_surger","end_closer"
@@ -537,6 +537,9 @@ Class Horse extends DatabaseUtility{
     public $horse_stats_id, $rating, $fans, $epiphet, $horse_date, $major_wins, $career_scenario, 
     $speed, $stamina, $power, $guts, $wit, 
     $turf, $dirt, $sprint, $mile, $medium, $long, $front_runner, $pace_chaser, $late_surger, $end_closer;
+    public $is_guest = 0;   // DEFAULT = 0
+    public $trainer_name;
+    public $parent_ids = [];    // hold 2 horse_ids. no particular order.
 
     public $skills_owned = [];
     public $races_ran = [];
@@ -559,7 +562,7 @@ Class Horse extends DatabaseUtility{
     static function loadAllHorses($search_text){    //should really be $parameters. [min,max] for ranges of enum vals
         $horses_array = [];
         if(!$search_text) {
-            $sql = 'SELECT Horses.* , HorseStats.rating FROM Horses INNER JOIN HorseStats ON Horses.horse_id = HorseStats.horse_id';
+            $sql = 'SELECT Horses.* , HorseStats.rating FROM Horses INNER JOIN HorseStats ON Horses.horse_id = HorseStats.horse_id WHERE Horses.is_guest = 0';
             $rows = DatabaseUtility::loadAll($sql);
             foreach($rows as $key => $row){
                 $horses_array[] = new Horse($row);
@@ -578,10 +581,11 @@ Class Horse extends DatabaseUtility{
             $result = $stmt->execute();
             if($result){
                 $row = $result->fetchArray();
-                $this->unpack($row);
-            }
+                if($row){ $this->unpack($row); $result = true; }
+                else{ $result = false; }
+            } else{ $result = false; }
             $db->close();
-            return true;
+            
         }
         return $result;
     }
@@ -598,7 +602,7 @@ Class Horse extends DatabaseUtility{
         }
 
         
-        $sql = 'INSERT INTO Horses(trainer_id,roster_id,horse_type,stat_spark,apt_spark) VALUES(:trainer_id,:roster_id,:horse_type,:stat_spark,:apt_spark)';
+        $sql = 'INSERT INTO Horses(trainer_id,roster_id,horse_type,stat_spark,apt_spark,is_guest) VALUES(:trainer_id,:roster_id,:horse_type,:stat_spark,:apt_spark,:is_guest)';
         $stmt = $db->prepare($sql);
         
         $h_a = $GLOBALS['h_a'];
@@ -693,6 +697,45 @@ Class Horse extends DatabaseUtility{
                 $races_array[] = $new_race; }
         }
         return $races_array;
+    }
+    function loadInspirations(){
+        $sql = 'SELECT Inspirations.parent_id FROM Inspirations WHERE Inspirations.child_id = :primary_key';
+        $rows = DatabaseUtility::loadOffKey($sql,$this->horse_id);
+        $parents_array = [];
+        if( isset($rows["parent_id"]) ) { $rows = [$rows]; }
+        foreach($rows as $key => $row){
+            $parent = new Horse(["horse_id"=>$row["parent_id"]]);
+            $result = $parent->loadHorse();
+            #$result = $parent->loadStats();
+            if($result){ $parents_array[] = $parent; }
+        }
+        return $parents_array;
+    }
+    function createInspiration($params){
+        // 
+        $db = new SQLite3('../data/database.db');
+        $sql = 'INSERT INTO Inspirations(child_id, parent_id) VALUES(:child_id, :parent_id)';
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':child_id' , $this->horse_id, SQLITE3_INTEGER);
+        $stmt->bindValue(':parent_id' , $params["parent_id"], SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        if($result) {
+            $this->parent_ids[] = $params["parent_id"];
+        }
+        return $result;
+    }
+    static function loadAllGuests($search_text){    //should really be $parameters. [min,max] for ranges of enum vals
+        $horses_array = [];
+        if(!$search_text) {
+            $sql = 'SELECT Horses.* , TrainersTable.trainer_name FROM Horses INNER JOIN TrainersTable ON Horses.trainer_id = TrainersTable.trainer_id WHERE Horses.is_guest = 1';
+            $rows = DatabaseUtility::loadAll($sql);
+            foreach($rows as $key => $row){
+                $horse = new Horse($row);
+                $horse->trainer_name = $row["trainer_name"];
+                $horses_array[] = $horse;
+            }
+        }
+        return $horses_array;
     }
 }
 

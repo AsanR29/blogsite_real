@@ -35,6 +35,7 @@ if(isset($_GET['trainer_id'])){
     <div class="vertical_buttons floatright">
         <button type="button" class="gen_button floatright" onclick="sendForm('horse_records')">Submit Records</button>
         <a href="./create_horse.php"><button type="button" class="gen_button floatright">Create Horse</button></a>
+        <a href="./create_guest.php"><button type="button" class="gen_button floatright">Create Guest</button></a>
     </div>
 </form>
 

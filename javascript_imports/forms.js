@@ -493,3 +493,43 @@ function removeRaceRecord(id){
     console.log("horse_record_"+id);
     div.outerHTML = ""; return;
 }
+
+function queueParent(element,horse_id) {
+    let children = element.children[0];
+    let stats = children.getElementsByTagName("output");
+
+    let values = {
+        "src" : children.getElementsByTagName("img")[0].src,
+        "id" : horse_id,
+        "name" : children.getElementsByTagName("a")[0].innerText,
+        "rating" : stats[0].innerText,
+        "stat" : stats[1].innerText,
+        "apt" : stats[2].innerText,
+    };
+    console.log(values);
+    // all data retrieved. begin copy process
+    let spots_open = true;
+    let receptor = document.getElementById("parent_top_0");
+    if( !(receptor && receptor.getAttribute("data-full") == "N") ) {
+        receptor = document.getElementById("parent_top_1");
+        if( !(receptor && receptor.getAttribute("data-full") == "N") ) {
+            spots_open = false; // neither worked
+            return;
+        }
+    } 
+    if(spots_open) {
+        fillParent(receptor,values);
+        receptor.setAttribute("data-full", "Y");
+    }
+    return;
+}
+
+function fillParent(element,values) {
+    element.querySelector("[data-horseimg]").src = values["src"];
+    element.querySelector("[data-horseid]").value = values["id"];
+    element.querySelector("[data-horsename]").innerText = values["name"];
+    element.querySelector("[data-horserating]").innerText = values["rating"];
+    element.querySelector("[data-statspark]").innerText = values["stat"];
+    element.querySelector("[data-aptspark]").innerText = values["apt"];
+    return;
+}

@@ -7,7 +7,13 @@ if(isset($_GET['horse_id'])){
 }
 $horse = new Horse($_GET);
 $result = $horse->loadHorse();
+
+$IS_GUEST = false;
 $result = $horse->loadStats();
+
+if(!$result){
+    $IS_GUEST = true;
+}
 ?>
 <body onload='pageObj = new CurrentPage([0], "../php_requests/create_career_records.php"); updateCssSize();'>
 <script type="text/javascript" src="../javascript_imports/textarea.js"></script>
@@ -33,6 +39,7 @@ $pagetitle = GetName($horse_enum)[0]; ?>
             ?>
         </output>
     </div>
+    <?php if(!$IS_GUEST): ?>
     <div class="horse_career_stats_grid">
         <label>rating</label><label>fans</label><label>epiphet</label><label>date</label><label>major wins</label><label>career scenario</label>
         <output name="rating" type="number" class="horse_record_output form_output"><?php echo $horse->rating; ?></output>
@@ -68,7 +75,7 @@ $pagetitle = GetName($horse_enum)[0]; ?>
         <output name="end" data-horse_record="end" data-limit="10" type="text" maxlength="1"><?php echo $letter_grades[$horse->end_closer]; ?></output>
 
     </div>
-
+    <?php endif; ?>
     <button class="gen_button floatright">Update Details</button>
 </form>
 
@@ -122,6 +129,10 @@ $pagetitle = GetName($horse_enum)[0]; ?>
         </div>
 
         <div id="mainbuffer"></div>
+        <div>
+            <?php require_once("../loaders/veteran_details/parents.php"); ?>
+        </div>
+
         <div class="vertical_buttons floatright">
             <button type="button" class="gen_button floatright" onclick="sendForm('horse_records')">Submit Records</button>
         </div>
@@ -129,7 +140,7 @@ $pagetitle = GetName($horse_enum)[0]; ?>
 </form>
 </article>
 
-<?php require_once('../loaders/main_bottom.php'); ?>
+<?php require_once('../loaders/parent_right.php'); ?>
 
 </body>
 </html>
