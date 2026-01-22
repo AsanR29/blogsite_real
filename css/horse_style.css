@@ -1,3 +1,17 @@
+#horsecontent{
+    width: 100%;
+}
+#horsebox{
+    display: flex;
+    width: 100%;
+    min-height: var(--height);
+    height: fit-content;
+    max-height: var(--height);
+    background-color: #F0F0F0;
+    overflow:auto;
+    overflow-x: hidden;
+}
+
 .race_record_grid{
     background-color: pink;
     border-width:0px;
@@ -50,6 +64,56 @@
     margin-bottom:10px;
     overflow:clip;
 }
+.skillowned_record_grid{
+    background-color: pink;
+    border-width:0px;
+    width: fit-content;
+
+    display:inline-grid;
+    
+    grid-template-columns: 
+        [skill_id] 90px
+        [record_button] min-content;
+    gap:4px;
+    padding:4px;
+    margin-right: 10px;
+    margin-bottom:10px;
+    overflow:clip;
+}
+.spark_record_grid{
+    background-color: pink;
+    border-width:0px;
+    width: fit-content;
+    display:inline-grid;
+    grid-template-columns: 
+        [sparktype_id] 90px
+        [spark_stars] 60px
+        [record_button] min-content;
+    gap:4px;
+    padding:4px;
+    margin-right: 10px;
+    margin-bottom:10px;
+    overflow:clip;
+}
+.raceran_record_grid{
+    background-color: pink;
+    border-width:0px;
+    width:auto;
+
+    display:grid;
+    grid-template-columns: 
+        [race_ran] minmax(min-content, 1fr)
+        [weather] 90px
+        [track_conditions] 90px
+        [strategy] 90px
+        [placement] 90px
+        [record_button] min-content;
+    gap:4px;
+    padding:4px;
+    margin-bottom:10px;
+    overflow:clip;
+}
+
 .horse_stat_sparks_grid{
     display:grid;
     grid-template-columns:
@@ -78,6 +142,26 @@
     gap:4px;
     padding:4px;
 }
+
+.seventy_thirty{
+    
+    display: grid; gap: 4px; padding: 4px;
+    grid-template-columns:
+        60% 40%;
+    padding-bottom: 10px;
+}
+.horse_race_head{
+    display: grid; gap: 4px; padding: 4px;
+    grid-template-columns: max-content 90px;
+}
+.horse_racesran_grid{
+    display: grid; gap:4px; padding:4px;
+    grid-template-columns: 
+        60px 60px 60px 60px 60px 60px 60px 60px 60px 60px;
+}
+
+
+
 .horse_record_input{
     color:#000000;
     border-width: 0px;
@@ -89,6 +173,13 @@
     border-width: 0px;
     background-color: rgba(255, 255, 255, 0.9);
     padding:4;
+}
+.horse_record_output{
+    color:#000000;
+    border-width: 0px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding:4;
+    height:min-content;
 }
 
 .vertical_buttons{
@@ -111,8 +202,8 @@
 
 .horse_icon_box{
     background-color:white;
-    min-width:50px;
-    min-height:50px;
+    min-width:120px;
+    min-height:120px;
     width:min-content;
     height:min-content;
 }

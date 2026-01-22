@@ -11,7 +11,7 @@ $params = array();
 
 //
 //$skill_records = Skill::loadAllSkills();
-//$card_records = SupportCard::loadAllCards();
+//
 //
 
 if(isset($form['horse_search'])){
@@ -49,35 +49,52 @@ if(isset($form['horse_search'])){
         case 'skill':
             break;
         case 'card':
+            $card_records = SupportCard::loadAllCards($form['horse_search']);
+            for($i = 0; $i < count($card_records); $i++): ?>
+                <section class="blogpr blogpreview">
+                    <div class="blogp">
+                        <div class="blogpL1 blogpr"></div>
+                        <div class="blogpM1" style="display:flex; padding-top:8px;">
+                            <div class="blogt">
+                                <span class="b_text"><?php echo $card_records[$i]->card_name; ?></span>
+                                <span class="b_text"><?php echo GetName(GetHorseEnum($card_records[$i]->trainee_enum))[0]; ?></span>
+                                <span class="b_text"><?php echo $stat_names[$card_records[$i]->stat]; ?></span>
+                                <span class="b_text"><?php echo $rarity_names[$card_records[$i]->rarity]; ?></span>
+                            </div>
+                        </div>
+                        <div class="blogpR1 blogpr"></div>
+                    </div>
+                    <div class="blogfoot blogpr"></div>
+                </section>
+                <div id="mainbuffer"></div>
+            <?php endfor; ?>
+            <?php if(count($card_records) == 0): ?>
+                <section>
+                    <div><output class="titlesize" style="color:grey">No Support Cards found</h2></div>
+                </section>
+            <?php endif;
             break;
         case 'trainee':
             ?> <section class="squares_menu"> <?php 
             $horse_records = Horse::loadAllHorses($form['horse_search']);
             for($i = 0; $i < count($horse_records); $i++): ?>
-                <div class="horse_icon_box menu_gaps">
-                    <img src="<?php
-                        $params = array(
-                            'roster_id'=>$horse_records[$i]->roster_id,
-                            'file_use'=>"horse_icon"
-                        );
-                        $pfp_file = new UserFile($params);
-                        $result = $pfp_file->loadFile();
-                        if($result){
-                            echo $pfp_file->getUrl();
-                        }
-                        else{
-                            echo "../css/defaultpfp.png";
-                        }
-                    ?>">
-                    <a href="../blogdaily/veteran.php?horse_id=<?php echo $horse_records[$i]->horse_id; ?>">
-                        <?php $horse_enum = GetHorseEnum($horse_records[$i]->horse_type);
-                        echo GetName($horse_enum)[0]; ?>
-                    </a>
-                </div>
+                <?php require("veteran_box.php"); ?>
             <?php endfor; ?>
             <?php if(count($horse_records) == 0): ?>
                 <section>
-                    <div><output class="titlesize" style="color:grey">No Horses found</h2></div>
+                    <div><output class="titlesize" style="color:grey">No Horses found</output></div>
+                </section>
+            <?php endif;
+            break;
+        case 'guest':
+            ?> <section class="squares_menu"> <?php
+            $horse_records = Horse::loadAllGuests($form['horse_search']);
+            for($i = 0; $i < count($horse_records); $i++): ?>
+                <?php require("guest_box.php"); ?>
+            <?php endfor; ?>
+            <?php if(count($horse_records) == 0): ?>
+                <section>
+                    <div><output class="titlesize" style="color:grey">No Guests found</output></div>
                 </section>
             <?php endif;
             break;

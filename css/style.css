@@ -109,7 +109,7 @@ form{
     max-height: var(--height);
     background-color: #F0F0F0;
     overflow:auto;
-    overflow-x: hidden;;
+    overflow-x: hidden;
 }
 #mainmargin{
     width: 5%;
@@ -120,6 +120,14 @@ form{
 #mainbuffer{
     width: 100%;
     height: calc(var(--nav-lineheight) * 0.5);
+}
+#mainbuffer-2{
+    width: 100%;
+    height: calc(var(--nav-lineheight));
+}
+#mainbuffer-3{
+    width: 100%;
+    height: calc(var(--nav-lineheight) * 1.5);
 }
 #maincontent{
     width: 100%;
@@ -598,6 +606,10 @@ form{
 
 .blogtagbutton{
     display: inline-block;
+}
+.nostylebutton{
+    padding: 0px;
+    border-width: 0px;
 }
 .blog_tag{
     color:white;

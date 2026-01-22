@@ -175,13 +175,14 @@ class CurrentPage {
             pageObj.userInput = [true,e.key]; ++pageObj.key_press_id;
 
             let current_input = document.activeElement;
-            if(e.key == "ArrowLeft" || e.key == "ArrowRight") {
+            // The arrow key functions can be done using tab / shift tab.
+            /*if(e.key == "ArrowLeft" || e.key == "ArrowRight") {
                 let i = pageObj.inputAreas.findIndex(findInputCallback, current_input); //this is set to current_input in the callback
                 let direction;
                 if(e.key == "ArrowLeft"){ i -= 1; direction = -1; } else{ i += 1; direction = 1; }  //ArrowRight = +1
                 pageObj.inputAreas[i].focus();
                 setTimeout(skipInput, 500, e, pageObj.key_press_id, i, direction);
-            }
+            }*/
         };
         document.querySelector("html").onkeyup = function(e){
             if(pageObj.userInput[0] == true && e.key == pageObj.userInput[1]) {
@@ -443,7 +444,7 @@ function addNewHorseRecord(location,type){
     }
     switch(type){
         case "race":
-            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="race_record_grid"><input id='+input_ids+' name="race_name[]" type="text" class="horse_record_input form_input" placeholder="race name"></input><select id='+(input_ids+1)+' name="race_grade[]" class="horse_record_input form_input"><option value="0">DEBUT</option><option value="1">MAIDEN</option><option value="2">OP</option><option value="3">G3</option><option value="4">G2</option><option selected value="5">G1</option><option value="6">EX</option></select><input id='+(input_ids+2)+' name="race_distance[]" type="number" class="horse_record_input form_input" placeholder="1600"></input><select id='+(input_ids+3)+' name="racecourse[]" class="horse_record_input form_input"><option value="0">Sapporo</option><option value="1">Hakodate</option><option value="2">Fukushima</option><option value="3">Niigata</option><option value="4">Tokyo</option><option value="5">Nakayama</option><option value="6">Chukyo</option><option value="7">Kyoto</option><option value="8">Hanshin</option><option value="9">Kokura</option><option value="10">Oi</option></select><select id='+(input_ids+4)+' name="race_track_type[]" class="horse_record_input form_input"><option selected value="0">Turf</option><option value="0">Dirt</option></select><select id='+(input_ids+5)+' name="race_direction[]" class="horse_record_input form_input"><option selected value="0">Left</option><option value="0">Right</option></select><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="race_record_grid"><input id='+input_ids+' name="race_name[]" type="text" class="horse_record_input form_input" placeholder="race name"></input><select id='+(input_ids+1)+' name="race_grade[]" class="horse_record_input form_input"><option value="0">DEBUT</option><option value="1">MAIDEN</option><option value="2">PRE-OP</option><option value="3">OP</option><option value="4">G3</option><option value="5">G2</option><option selected value="6">G1</option><option value="7">EX</option></select><input id='+(input_ids+2)+' name="race_distance[]" type="number" class="horse_record_input form_input" placeholder="1600"></input><select id='+(input_ids+3)+' name="racecourse[]" class="horse_record_input form_input"><option value="0">Sapporo</option><option value="1">Hakodate</option><option value="2">Fukushima</option><option value="3">Niigata</option><option value="4">Tokyo</option><option value="5">Nakayama</option><option value="6">Chukyo</option><option value="7">Kyoto</option><option value="8">Hanshin</option><option value="9">Kokura</option><option value="10">Oi</option></select><select id='+(input_ids+4)+' name="race_track_type[]" class="horse_record_input form_input"><option selected value="0">Turf</option><option value="1">Dirt</option></select><select id='+(input_ids+5)+' name="race_direction[]" class="horse_record_input form_input"><option selected value="0">Left</option><option value="1">Right</option></select><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
             input_ids += 6;
             break;
         case "skill":
@@ -451,16 +452,36 @@ function addNewHorseRecord(location,type){
             input_ids += 3;
             break;
         case "card":
-            let text = '<div id="horse_record_' + id + '" class="card_record_grid"><input id='+(input_ids)+' name="card_name[]" type="text" class="horse_record_input form_input" placeholder="happiest day"></input><select id='+(input_ids+1)+' name="trainee_enum[]" class="horse_record_input form_input">';
-            let trainee_keys = Object.keys(pageObj.trainee_dict);
-            let selected = true;
-            for(let key of trainee_keys){
-                text+= '<option' + (selected ? ' selected ' : ' ') + 'value="' + key + '">' + pageObj.trainee_dict[key] + '</option>';
-                selected = false;
-            }
-            text += '</select><select id='+(input_ids+2)+' name="stat[]"class="horse_record_input form_input"><option value="0">speed</option><option value="1">stamina</option><option value="2">power</option><option selected value="3">guts</option><option value="4">wit</option></select><select id='+(input_ids+3)+' name="rarity[]" class="horse_record_input form_input"><option value="0">R</option><option value="1">SR</option><option value="2">SSR</option></select><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>';
+            let text = '<div id="horse_record_' + id + '" class="card_record_grid"><input id='+(input_ids)+' name="card_name[]" type="text" class="horse_record_input form_input" placeholder="happiest day"></input><input id='+(input_ids+1)+' name="trainee_enum[]" class="horse_record_input form_input" list="trainee_options"></input>';
+            //let trainee_keys = Object.keys(pageObj.trainee_dict);
+            //let selected = true;
+            //for(let key of trainee_keys){
+            //    text+= '<option' + (selected ? ' selected ' : ' ') + 'value="' + key + '">' + pageObj.trainee_dict[key] + '</option>';
+            //    selected = false;
+            //}
+            text += '<select id='+(input_ids+2)+' name="stat[]"class="horse_record_input form_input"><option value="0">speed</option><option value="1">stamina</option><option value="2">power</option><option selected value="3">guts</option><option value="4">wit</option><option value="5">Friend</option></select><select id='+(input_ids+3)+' name="rarity[]" class="horse_record_input form_input"><option value="0">R</option><option value="1">SR</option><option value="2">SSR</option></select><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>';
             div.insertAdjacentHTML('beforeend',text);
             input_ids += 4;
+            break;
+        case "skillowned":
+            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="skillowned_record_grid"><input id='+input_ids+' name="skill_owned[]" type="text" class="horse_record_input form_input" placeholder="Skill owned" list="skill_options"></input><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+            input_ids += 1;
+            break;
+        case "racespark":
+            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="spark_record_grid"><input id='+input_ids+' name="race_spark[]" type="text" class="horse_record_input form_input" placeholder="Race Spark" list="racespark_options"></input><input id='+(input_ids+1)+' name="race_stars[]" class="horse_record_input form_input" type="number" placeholder="stars"></input><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+            input_ids += 2;
+            break;
+        case "skillspark":
+            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="spark_record_grid"><input id='+input_ids+' name="skill_spark[]" type="text" class="horse_record_input form_input" placeholder="Skill Spark" list="skill_options"></input><input id='+(input_ids+1)+' name="skill_stars[]" class="horse_record_input form_input" type="number" placeholder="stars"></input><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+            input_ids += 2;
+            break;
+        case "cardused":
+            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="spark_record_grid"><input id='+input_ids+' name="card_used[]" type="text" class="horse_record_input form_input" placeholder="Support Card" list="card_options"></input><input id='+(input_ids+1)+' name="card_level[]" class="horse_record_input form_input" type="number" placeholder="level"></input><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+            input_ids += 2;
+            break;
+        case "raceran":
+            div.insertAdjacentHTML('beforeend','<div id="horse_record_' + id + '" class="raceran_record_grid"><input id='+input_ids+' name="race_ran[]" type="text" class="horse_record_input form_input" placeholder="Race Name" list="race_options"><select id='+(input_ids+1)+' name="weather[]" class="horse_record_input form_input" type="number"><option value="0">Sunny</option><option value="1">Cloudy</option><option value="2">Rainy</option><option value="3">Snowy</option></select><select id='+(input_ids+2)+' name="track_conditions[]" class="horse_record_input form_input" type="number"><option value="0">Firm</option><option value="1">Good</option><option value="2">Soft</option><option value="3">Heavy</option></select><select id='+(input_ids+3)+' name="strategy[]" class="horse_record_input form_input" type="number"><option value="0">Front Runner</option><option value="1">Pace Chaser</option><option value="2">Late Surger</option><option value="3">End Closer</option></select><input id='+(input_ids+4)+' name="placement[]" class="horse_record_input form_input" type="number" placeholder="Placement"><button type="button" onclick="removeRaceRecord(' + id + ')" class="gen_button blogtagbutton unround">X</button></div>');
+            input_ids += 5;
             break;
     }
     pageObj.updateInputAreas();
@@ -469,5 +490,46 @@ function addNewHorseRecord(location,type){
 
 function removeRaceRecord(id){
     div = document.getElementById("horse_record_"+id);
+    console.log("horse_record_"+id);
     div.outerHTML = ""; return;
+}
+
+function queueParent(element,horse_id) {
+    let children = element.children[0];
+    let stats = children.getElementsByTagName("output");
+
+    let values = {
+        "src" : children.getElementsByTagName("img")[0].src,
+        "id" : horse_id,
+        "name" : children.getElementsByTagName("a")[0].innerText,
+        "rating" : stats[0].innerText,
+        "stat" : stats[1].innerText,
+        "apt" : stats[2].innerText,
+    };
+    console.log(values);
+    // all data retrieved. begin copy process
+    let spots_open = true;
+    let receptor = document.getElementById("parent_top_0");
+    if( !(receptor && receptor.getAttribute("data-full") == "N") ) {
+        receptor = document.getElementById("parent_top_1");
+        if( !(receptor && receptor.getAttribute("data-full") == "N") ) {
+            spots_open = false; // neither worked
+            return;
+        }
+    } 
+    if(spots_open) {
+        fillParent(receptor,values);
+        receptor.setAttribute("data-full", "Y");
+    }
+    return;
+}
+
+function fillParent(element,values) {
+    element.querySelector("[data-horseimg]").src = values["src"];
+    element.querySelector("[data-horseid]").value = values["id"];
+    element.querySelector("[data-horsename]").innerText = values["name"];
+    element.querySelector("[data-horserating]").innerText = values["rating"];
+    element.querySelector("[data-statspark]").innerText = values["stat"];
+    element.querySelector("[data-aptspark]").innerText = values["apt"];
+    return;
 }

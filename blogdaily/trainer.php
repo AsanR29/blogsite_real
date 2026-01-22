@@ -20,7 +20,9 @@ if(isset($_GET['trainer_id'])){
 <article>
 
 <form>
-    <div id="mainbuffer"></div>
+    <div id="mainbuffer">
+        <?php require_once("../loaders/veteran_details/datalists.php"); ?>
+    </div>
     <label>Races: </label>
     <div id="createtags" class="inputrow">
         <button type="button" id="blogtag_create" class="gen_button" onclick="addNewHorseRecord('horse_records','race')">Add Race</button>
@@ -33,6 +35,7 @@ if(isset($_GET['trainer_id'])){
     <div class="vertical_buttons floatright">
         <button type="button" class="gen_button floatright" onclick="sendForm('horse_records')">Submit Records</button>
         <a href="./create_horse.php"><button type="button" class="gen_button floatright">Create Horse</button></a>
+        <a href="./create_guest.php"><button type="button" class="gen_button floatright">Create Guest</button></a>
     </div>
 </form>
 

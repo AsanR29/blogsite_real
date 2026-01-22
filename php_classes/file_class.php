@@ -23,7 +23,7 @@ Class UserFile extends DatabaseEntity{
             $file_end = ".mp4";
         }
 
-        if(true || $this->file_url){
+        if($this->file_url){
             return "../userfiles/" . $this->file_url . $file_end;
         }
         else{
@@ -31,7 +31,7 @@ Class UserFile extends DatabaseEntity{
                 return "../css/defaultpfp.png";
             }
             else{
-                return "../userfiles/-1";
+                return false;
             }
         }
     }

@@ -50,7 +50,9 @@ if($account_id && $trainer_id){
 
     $error_holder['files_Stuff'] = $_FILES["imageSubmission"];
     if($result) {
-        $result = $new_horse->createHorseStats();
+        if(!isset($_POST["is_guest"]) || $_POST["is_guest"] == 0) {
+            $result = $new_horse->createHorseStats();
+        }
         $params = array(
             'roster_id'=>$new_horse->roster_id,
             'account_id'=>$account_id,

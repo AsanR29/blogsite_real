@@ -19,6 +19,7 @@
                 <option value="skill">skill</option>
                 <option value="card">support card</option>
                 <option value="trainee">trainee</option>
+                <option value="guest">guest</option>
             </select>
         </div>
         <div class="brow nav-cell">

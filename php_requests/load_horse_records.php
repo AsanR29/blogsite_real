@@ -8,7 +8,7 @@ $race_records = Race::loadAllRaces(false);
 
 $skill_records = Skill::loadAllSkills();
 
-$card_records = SupportCard::loadAllCards();
+$card_records = SupportCard::loadAllCards(false);
 
 
 ?>
